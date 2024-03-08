@@ -55,9 +55,7 @@ namespace PokerServer
                 case Command.FOLD:
                     this.handleFold();
                     break;
-
             }
-            
         }
 
         private void handleFold()
