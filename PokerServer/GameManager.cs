@@ -184,21 +184,25 @@ namespace PokerServer
                 switch (this.stage) 
                 {
                     case Stage.BET_AGREE_ROUND_ONE:
+                        this.minimumBet = 0;
                         this.stage = Stage.THREE_CARDS_OPEN;
                         this.sendCardsForTable(3);
                         this.stage = Stage.BET_AGREE_ROUND_TWO;
                         break;
                     case Stage.BET_AGREE_ROUND_TWO:
+                        this.minimumBet = 0;
                         this.stage = Stage.FOUR_CARDS_OPEN;
                         this.sendCardsForTable(1);
                         this.stage = Stage.BET_AGREE_ROUND_THREE;
                         break;
                     case Stage.BET_AGREE_ROUND_THREE:
+                        this.minimumBet = 0;
                         this.stage = Stage.FIVE_CARDS_OPEN;
                         this.sendCardsForTable(1);
                         this.stage = Stage.BET_AGREE_ROUND_FOUR;
                         break;
                     case Stage.BET_AGREE_ROUND_FOUR:
+                        this.minimumBet = 0;
                         this.DecideWinner();
                         return;
                 }
