@@ -21,9 +21,9 @@ namespace PokerServer
             command = new SqlCommand();
         }
 
-        public int InsertNewUser(string username, string password, string firstName, string lastName, string email, string city, string gender, int money)
+        public int InsertNewUser(string username, string password, string firstName, string lastName, string email, string city, string gender, int allTimeProfit)
         {
-            command.CommandText = "INSERT INTO Users VALUES('" + username + "','" + password + "','" + firstName + "','" + lastName + "','" + email + "','" + city + "','" + gender + "','" + money + "')";
+            command.CommandText = "INSERT INTO Users VALUES('" + username + "','" + password + "','" + firstName + "','" + lastName + "','" + email + "','" + city + "','" + gender + "','" + allTimeProfit + "')";
             connection.Open();
             var x = command.ExecuteNonQuery();
             connection.Close();
@@ -70,15 +70,6 @@ namespace PokerServer
             return b ;
         }
 
-        public int GetUserMoney(int id)
-        {
-            command.CommandText = "SELECT Money FROM Users WHERE Id =" + id;
-            connection.Open();
-            command.Connection = connection;
-            int b = Convert.ToInt32(command.ExecuteScalar());
-            connection.Close();
-            return b;
-        }
 
         public string GetUsernameFromId(int id)
         {
@@ -90,9 +81,27 @@ namespace PokerServer
             return b;
         }
 
-        public void UpdateMoney(int id, int money)
+        public int GetAllTimeProfit(int id)
         {
-            command.CommandText = "UPDATE Users SET Money = " + money + " WHERE Id =" + id;
+            command.CommandText = "SELECT AllTimeProfit FROM Users WHERE Id =" + id;
+            connection.Open();
+            command.Connection = connection;
+            int b = Convert.ToInt32(command.ExecuteScalar());
+            connection.Close();
+            return b;
+        }
+
+        public void UpdateAllTimeProfitForWinner(int id, int profitFromThisGame)
+        {
+            command.CommandText = "UPDATE Users SET AllTimeProfit = AllTimeProfit +" + profitFromThisGame + " WHERE Id =" + id;
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
+        }
+
+        public void UpdateAllTimeProfitForLosers(int id, int profitFromThisGame)
+        {
+            command.CommandText = "UPDATE Users SET AllTimeProfit = AllTimeProfit -" + profitFromThisGame + " WHERE Id =" + id;
             connection.Open();
             command.ExecuteNonQuery();
             connection.Close();

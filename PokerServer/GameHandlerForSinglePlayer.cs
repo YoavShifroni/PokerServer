@@ -17,6 +17,7 @@ namespace PokerServer
         public int playerMoney;
         public string username = "";
         public int betMoney = 0;
+
         public Stage lastStageTheUserPlayed = Stage.NONE;
         private SqlConnect sqlConnect;
         private PokerClientConnection pokerClientConnection;
@@ -99,7 +100,7 @@ namespace PokerServer
                 return;
             }
             this.username = username;
-            this.playerMoney = sqlConnect.GetUserMoney(this.userId);
+            this.playerMoney = 1000;
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.command = Command.SUCCES;
             clientServerProtocol.username = username;
@@ -121,7 +122,7 @@ namespace PokerServer
             }
             this.username = username;
             this.playerMoney = 1000;
-            this.userId = sqlConnect.InsertNewUser(username,password, firstName, lastName, email, city, gender, this.playerMoney);
+            this.userId = sqlConnect.InsertNewUser(username,password, firstName, lastName, email, city, gender, 0);
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.command = Command.SUCCES;
             clientServerProtocol.username = username;
@@ -159,14 +160,16 @@ namespace PokerServer
             this.gameManager.Close(this);
         }
 
+
         public void UpdateMoneyWhenGameEndsForLosers()
         {
-            sqlConnect.UpdateMoney(this.userId, this.playerMoney);
+
+            sqlConnect.UpdateAllTimeProfitForLosers(this.userId, this.betMoney);
         }
 
         public void UpdateMoneyWhenGameEndsForWinner(int moneyOnTheTable)
         {
-            sqlConnect.UpdateMoney(this.userId, this.playerMoney + moneyOnTheTable);
+            sqlConnect.UpdateAllTimeProfitForWinner(this.userId, moneyOnTheTable - this.betMoney);
         }
 
         public PlayerHand GetPlayerHand()
@@ -174,6 +177,12 @@ namespace PokerServer
             List<Card> myCards = this.cards.OfType<Card>().ToList();
             PlayerHand hand = new PlayerHand(myCards, this.username);
             return hand;
+        }
+
+        public int GetAllTimeProfit()
+        {
+            return sqlConnect.GetAllTimeProfit(this.userId);
+
         }
     }
 }

@@ -84,6 +84,7 @@ namespace PokerServer
                 ClientServerProtocol clientServerProtocol2 = new ClientServerProtocol();
                 clientServerProtocol2.command = Command.START_GAME;
                 clientServerProtocol2.playerMoney = player.playerMoney;
+                clientServerProtocol2.allTimeProfit = player.GetAllTimeProfit();
                 player.SendMessage(clientServerProtocol2.generate());
 
                 Card[] cards = this.getCardsFromTable(2);
@@ -144,7 +145,7 @@ namespace PokerServer
             GameHandlerForSinglePlayer winner = this.checkIfSingleWinner();
             if(winner != null)
             {
-                this.HandleWinner(winner);
+                this.NotifyWinner(winner.username);
                 return;
             }
             foreach (GameHandlerForSinglePlayer player in _allPlayers)

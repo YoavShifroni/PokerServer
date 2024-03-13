@@ -44,6 +44,8 @@ namespace PokerServer
 
         public int minimumBet { get; set; }
 
+        public int allTimeProfit {  get; set; }
+
 
 
 
@@ -96,6 +98,7 @@ namespace PokerServer
                     try
                     {
                         this.playerMoney = Convert.ToInt32(answer[1]);
+                        this.allTimeProfit = Convert.ToInt32(answer[2]);
                     }
                     catch
                     {
@@ -157,6 +160,7 @@ namespace PokerServer
                     break;
                 case Command.START_GAME:
                     answer += this.playerMoney.ToString() + "\n";
+                    answer += this.allTimeProfit.ToString() + "\n";
                     break;
                 case Command.RAISE:
                     answer += this.betMoney.ToString() + "\n";
