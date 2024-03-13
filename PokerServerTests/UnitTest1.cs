@@ -234,7 +234,6 @@ namespace PokerServerTests
             List<string> winners = PokerRules.DetermineWinner(playersCards, communityCards);
             Assert.AreEqual(winners, null);
 
-
         }
 
 

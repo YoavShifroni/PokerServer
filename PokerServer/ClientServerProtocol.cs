@@ -8,19 +8,19 @@ namespace PokerServer
 {
     public enum Command
     {
-        REGISTRATION = 1,
-        LOGIN = 2,
-        OPEN_CARDS = 3,
-        RAISE = 4,
-        CHECK = 5,
-        FOLD = 6,
-        SUCCES = 7,
-        USERNAME_OF_CONNECTED_PLAYERS = 8,
-        START_GAME = 9,
-        SEND_STARTING_CARDS_TO_PLAYER = 10,
-        UPDATE_BET_MONEY = 11,
-        YOUR_TURN = 12,
-        TELL_EVERYONE_WHO_WON = 13,
+        REGISTRATION,
+        LOGIN,
+        OPEN_CARDS  ,
+        RAISE   ,
+        CHECK,
+        FOLD,
+        SUCCES,
+        USERNAME_OF_CONNECTED_PLAYERS,
+        START_GAME,
+        SEND_STARTING_CARDS_TO_PLAYER,
+        UPDATE_BET_MONEY,
+        YOUR_TURN,
+        TELL_EVERYONE_WHO_WON,
     };
 
     internal class ClientServerProtocol

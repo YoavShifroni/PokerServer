@@ -11,6 +11,7 @@ namespace PokerServer
 
     public class GameHandlerForSinglePlayer
     {
+
         public bool isInGame;
         public Card highCard = null;
         public int userId;
