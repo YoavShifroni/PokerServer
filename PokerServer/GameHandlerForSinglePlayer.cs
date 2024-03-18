@@ -46,7 +46,7 @@ namespace PokerServer
                     return;
                 case Command.START_GAME:
                     this.gameManager.StartGame();
-                    this.gameManager.nextTurn();
+                    this.gameManager.nextTurn(true);
                     break;
                 case Command.RAISE:
                     this.handleBetMoney(c1.betMoney);
@@ -66,7 +66,7 @@ namespace PokerServer
         private void handleFold()
         {
             this.isInGame = false;
-            this.gameManager.nextTurn();
+            this.gameManager.nextTurn(false);
         }
 
         private void handleCheck()

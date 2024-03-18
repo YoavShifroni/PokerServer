@@ -23,7 +23,7 @@ namespace PokerServer
         TELL_EVERYONE_WHO_WON,
     };
 
-    internal class ClientServerProtocol
+    public class ClientServerProtocol
     {
         public string username { get; set; }
         public string password { get; set; }
@@ -45,6 +45,16 @@ namespace PokerServer
         public int minimumBet { get; set; }
 
         public int allTimeProfit {  get; set; }
+
+        public int playerIndex { get; set; }
+
+        public int dealerIndex { get; set; }
+
+        public int smallBlindIndex { get; set; }
+
+        public int playersNumber { get; set; }
+        
+        public int bigBlindIndex { get; set; }
 
 
 
@@ -99,6 +109,12 @@ namespace PokerServer
                     {
                         this.playerMoney = Convert.ToInt32(answer[1]);
                         this.allTimeProfit = Convert.ToInt32(answer[2]);
+                        this.playerIndex = Convert.ToInt32(answer[3]);
+                        this.dealerIndex = Convert.ToInt32(answer[4]);
+                        this.smallBlindIndex = Convert.ToInt32(answer[5]);
+                        this.bigBlindIndex = Convert.ToInt32(answer[6]);
+                        this.playersNumber = Convert.ToInt32(answer[7]);
+
                     }
                     catch
                     {
@@ -161,6 +177,12 @@ namespace PokerServer
                 case Command.START_GAME:
                     answer += this.playerMoney.ToString() + "\n";
                     answer += this.allTimeProfit.ToString() + "\n";
+                    answer += this.playerIndex.ToString() + "\n";
+                    answer += this.dealerIndex.ToString() + "\n";
+                    answer += this.smallBlindIndex.ToString() + "\n";
+                    answer += this.bigBlindIndex.ToString() + "\n";
+                    answer += this.playersNumber.ToString() + "\n";
+
                     break;
                 case Command.RAISE:
                     answer += this.betMoney.ToString() + "\n";

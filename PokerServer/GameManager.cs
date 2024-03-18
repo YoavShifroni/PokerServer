@@ -29,10 +29,12 @@ namespace PokerServer
         private static LinkedList<GameHandlerForSinglePlayer> _allPlayers = new LinkedList<GameHandlerForSinglePlayer>();
         private List<Card> communityCards = new List<Card>();
         private int _activePlayerIndex = 0;
+        private int bigBlindIndex;
         private int moneyOnTheTable = 0;
         private bool agreeOnBet = true;
         public Stage stage;
         private int minimumBet;
+        private Random rnd = new Random();
 
         public const int MIN_BET_FACTOR = 2;
 
@@ -77,6 +79,11 @@ namespace PokerServer
 
         public void StartGame()
         {
+            int count = 0;
+            int dealer = rnd.Next(0, _allPlayers.Count);
+            int smallBlind = (dealer+1)%_allPlayers.Count;
+            this.bigBlindIndex = (smallBlind + 1)%_allPlayers.Count;
+            int playersNumber = _allPlayers.Count;
 
             foreach (GameHandlerForSinglePlayer player in _allPlayers)
             {
@@ -85,6 +92,11 @@ namespace PokerServer
                 clientServerProtocol2.command = Command.START_GAME;
                 clientServerProtocol2.playerMoney = player.playerMoney;
                 clientServerProtocol2.allTimeProfit = player.GetAllTimeProfit();
+                clientServerProtocol2.playerIndex = count;
+                clientServerProtocol2.dealerIndex = dealer;
+                clientServerProtocol2.smallBlindIndex = smallBlind;
+                clientServerProtocol2.bigBlindIndex = this.bigBlindIndex;
+                clientServerProtocol2.playersNumber = playersNumber;
                 player.SendMessage(clientServerProtocol2.generate());
 
                 Card[] cards = this.getCardsFromTable(2);
@@ -98,6 +110,7 @@ namespace PokerServer
                 clientServerProtocol.command = Command.SEND_STARTING_CARDS_TO_PLAYER;
                 clientServerProtocol.cards = answer;
                 player.SendMessage(clientServerProtocol.generate());
+                count++;
             }
 
 
@@ -135,11 +148,15 @@ namespace PokerServer
 
         }
 
-        
 
 
-        public void nextTurn()
+
+        public void nextTurn(bool firstTurn)
         {
+            if (firstTurn)
+            {
+                this._activePlayerIndex = (this.bigBlindIndex+1)%_allPlayers.Count;
+            }
             this.agreeOnBet = true;
             int betMoney = 0;
             GameHandlerForSinglePlayer winner = this.checkIfSingleWinner();
@@ -334,7 +351,7 @@ namespace PokerServer
             {
                 player.SendMessage(clientServerProtocol.generate());
             }
-            this.nextTurn();
+            this.nextTurn(false);
         }
 
         public int highestBet()
