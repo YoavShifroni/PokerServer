@@ -66,7 +66,7 @@ namespace PokerServer
         private void handleFold()
         {
             this.isInGame = false;
-            this.gameManager.nextTurn(false);
+            this.gameManager.handleRaise(0, this.username, false, false, true);
         }
 
         private void handleCheck()
@@ -76,7 +76,7 @@ namespace PokerServer
             this.betMoney = highestBet;
             this.playerMoney -= delta;
             this.lastStageTheUserPlayed = this.gameManager.stage;
-            this.gameManager.handleRaise(delta, this.username);
+            this.gameManager.handleRaise(delta, this.username, false, true, false);
         }
 
         private void handleBetMoney(int betMoney)
@@ -84,7 +84,7 @@ namespace PokerServer
             this.betMoney += betMoney;
             this.playerMoney -= betMoney;
             this.lastStageTheUserPlayed = this.gameManager.stage;
-            this.gameManager.handleRaise(betMoney, this.username);
+            this.gameManager.handleRaise(betMoney, this.username, true, false, false);
         }
 
         /// <summary>

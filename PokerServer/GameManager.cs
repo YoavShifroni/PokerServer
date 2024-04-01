@@ -29,7 +29,7 @@ namespace PokerServer
         private static LinkedList<GameHandlerForSinglePlayer> _allPlayers = new LinkedList<GameHandlerForSinglePlayer>();
         private List<Card> communityCards = new List<Card>();
         private int _activePlayerIndex = 0;
-        private int bigBlindIndex;
+        private int smallBlindIndex;
         private int moneyOnTheTable = 0;
         private bool agreeOnBet = true;
         public Stage stage;
@@ -77,26 +77,47 @@ namespace PokerServer
             return answer;
         }
 
+        public string getAllUsernameAndTheirMoney(int userId)
+        {
+            string answer = "";
+            foreach (GameHandlerForSinglePlayer player in _allPlayers)
+            {
+                if(player.userId == userId)
+                {
+                    continue;
+                }
+                answer += player.username + ",";
+                answer += player.playerMoney + ",";
+            }
+            answer = answer.Substring(0, answer.Length - 1);
+            return answer;
+        }
+
+
+
         public void StartGame()
         {
             int count = 0;
-            int dealer = rnd.Next(0, _allPlayers.Count);
-            int smallBlind = (dealer+1)%_allPlayers.Count;
-            this.bigBlindIndex = (smallBlind + 1)%_allPlayers.Count;
+            int dealerIndex = rnd.Next(0, _allPlayers.Count);
+            this.smallBlindIndex = (dealerIndex+1)%_allPlayers.Count;
+            int bigBlindIndex = (this.smallBlindIndex+1)%_allPlayers.Count;
             int playersNumber = _allPlayers.Count;
+            
 
             foreach (GameHandlerForSinglePlayer player in _allPlayers)
             {
+                string allUsers = this.getAllUsernameAndTheirMoney(player.userId);
                 player.isInGame = true;
                 ClientServerProtocol clientServerProtocol2 = new ClientServerProtocol();
                 clientServerProtocol2.command = Command.START_GAME;
                 clientServerProtocol2.playerMoney = player.playerMoney;
                 clientServerProtocol2.allTimeProfit = player.GetAllTimeProfit();
                 clientServerProtocol2.playerIndex = count;
-                clientServerProtocol2.dealerIndex = dealer;
-                clientServerProtocol2.smallBlindIndex = smallBlind;
-                clientServerProtocol2.bigBlindIndex = this.bigBlindIndex;
+                clientServerProtocol2.dealerIndex = dealerIndex;
+                clientServerProtocol2.smallBlindIndex = this.smallBlindIndex;
+                clientServerProtocol2.bigBlindIndex = bigBlindIndex;
                 clientServerProtocol2.playersNumber = playersNumber;
+                clientServerProtocol2.allUserDetails = allUsers;
                 player.SendMessage(clientServerProtocol2.generate());
 
                 Card[] cards = this.getCardsFromTable(2);
@@ -155,7 +176,7 @@ namespace PokerServer
         {
             if (firstTurn)
             {
-                this._activePlayerIndex = (this.bigBlindIndex+1)%_allPlayers.Count;
+                this._activePlayerIndex = (this.smallBlindIndex)%_allPlayers.Count;
             }
             this.agreeOnBet = true;
             int betMoney = 0;
@@ -339,10 +360,26 @@ namespace PokerServer
             
         }
 
-        public void handleRaise(int betMoney, string username)
+        public void handleRaise(int betMoney, string username, bool isRaise, bool isCheck, bool isFold)
         {
             this.minimumBet = betMoney*GameManager.MIN_BET_FACTOR;
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
+            if (isRaise)
+            {
+                clientServerProtocol.raiseType = "Raise";
+            }
+            else if(isCheck)
+            {
+                clientServerProtocol.raiseType = "Check";
+            }
+            else if(isFold)
+            {
+                clientServerProtocol.raiseType = "Fold";
+            }
+            else
+            {
+                throw new Exception("non of the action was true please check whats the problem and fix it");
+            }
             clientServerProtocol.command = Command.UPDATE_BET_MONEY;
             clientServerProtocol.betMoney = betMoney;
             this.moneyOnTheTable += betMoney;

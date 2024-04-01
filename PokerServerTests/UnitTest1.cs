@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PokerServer;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace PokerServerTests
@@ -91,7 +92,7 @@ namespace PokerServerTests
             cards.Add(new Card("5S"));
             (Card highCard, bool result) = PokerRules.IsStraight(cards);
             Assert.IsTrue(result);
-            Assert.AreEqual(CardComparer.GetCardValue(highCard), CardComparer.GetCardValue(cards[0]));
+            Assert.AreEqual(CardComparer.GetCardValue(highCard), CardComparer.GetCardValue(cards[6]));
 
 
         }
@@ -150,15 +151,15 @@ namespace PokerServerTests
         {
             List<Card> cards = new List<Card>();
             cards.Add(new Card("AH"));
-            cards.Add(new Card("2H"));
+            cards.Add(new Card("2C"));
             cards.Add(new Card("3H"));
             cards.Add(new Card("4H"));
             cards.Add(new Card("5H"));
             cards.Add(new Card("8D"));
-            cards.Add(new Card("2C"));
+            cards.Add(new Card("2H"));
             (Card highCard, bool result) = PokerRules.IsStraightFlush(cards);
             Assert.IsTrue(result);
-            Assert.AreEqual(CardComparer.GetCardValue(highCard), CardComparer.GetCardValue(cards[0]));
+            Assert.AreEqual(CardComparer.GetCardValue(highCard), CardComparer.GetCardValue(cards[4]));
 
         }
 
@@ -211,8 +212,9 @@ namespace PokerServerTests
 
         }
 
+
         [TestMethod]
-        public void TestDetermineWinner()
+        public void TestDetermineWinnerOnePair()
         {
             List<Card> communityCards = new List<Card>();
             communityCards.Add(new Card("2H"));
@@ -222,22 +224,345 @@ namespace PokerServerTests
             communityCards.Add(new Card("7H"));
             List<Card> cardsForPlayer1 = new List<Card>();
             cardsForPlayer1.Add(new Card("3H"));
-            cardsForPlayer1.Add(new Card("5S"));
+            cardsForPlayer1.Add(new Card("QS"));
             List<Card> cardsForPlayer2 = new List<Card>();
             cardsForPlayer2.Add(new Card("4H"));
-            cardsForPlayer2.Add(new Card("6S"));
+            cardsForPlayer2.Add(new Card("7S"));
             PlayerHand player1 = new PlayerHand(cardsForPlayer1, "yoav");
             PlayerHand player2 = new PlayerHand(cardsForPlayer2, "roy");
+            List<string> nameOfWinner = new List<string>();
+            nameOfWinner.Add(player1.username);
             List<PlayerHand> playersCards = new List<PlayerHand>();
             playersCards.Add(player1);
             playersCards.Add(player2);
             List<string> winners = PokerRules.DetermineWinner(playersCards, communityCards);
-            Assert.AreEqual(winners, null);
+            CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
+        }
+
+        [TestMethod]
+        public void TestDetermineWinnerTwoPair()
+        {
+            List<Card> communityCards = new List<Card>();
+            communityCards.Add(new Card("2H"));
+            communityCards.Add(new Card("KD"));
+            communityCards.Add(new Card("QC"));
+            communityCards.Add(new Card("JH"));
+            communityCards.Add(new Card("7H"));
+            List<Card> cardsForPlayer1 = new List<Card>();
+            cardsForPlayer1.Add(new Card("2S"));
+            cardsForPlayer1.Add(new Card("QS"));
+            List<Card> cardsForPlayer2 = new List<Card>();
+            cardsForPlayer2.Add(new Card("2C"));
+            cardsForPlayer2.Add(new Card("7S"));
+            PlayerHand player1 = new PlayerHand(cardsForPlayer1, "yoav");
+            PlayerHand player2 = new PlayerHand(cardsForPlayer2, "roy");
+            List<string> nameOfWinner = new List<string>();
+            nameOfWinner.Add(player1.username);
+            List<PlayerHand> playersCards = new List<PlayerHand>();
+            playersCards.Add(player1);
+            playersCards.Add(player2);
+            List<string> winners = PokerRules.DetermineWinner(playersCards, communityCards);
+            CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
+
+        }
+
+        [TestMethod]
+        public void TestDetermineWinnerThreeOfAKind()
+        {
+            List<Card> communityCards = new List<Card>();
+            communityCards.Add(new Card("2H"));
+            communityCards.Add(new Card("KD"));
+            communityCards.Add(new Card("QC"));
+            communityCards.Add(new Card("JH"));
+            communityCards.Add(new Card("7H"));
+            List<Card> cardsForPlayer1 = new List<Card>();
+            cardsForPlayer1.Add(new Card("2C"));
+            cardsForPlayer1.Add(new Card("2S"));
+            List<Card> cardsForPlayer2 = new List<Card>();
+            cardsForPlayer2.Add(new Card("7D"));
+            cardsForPlayer2.Add(new Card("7S"));
+            PlayerHand player1 = new PlayerHand(cardsForPlayer1, "yoav");
+            PlayerHand player2 = new PlayerHand(cardsForPlayer2, "roy");
+            List<string> nameOfWinner = new List<string>();
+            nameOfWinner.Add(player2.username);
+            List<PlayerHand> playersCards = new List<PlayerHand>();
+            playersCards.Add(player1);
+            playersCards.Add(player2);
+            List<string> winners = PokerRules.DetermineWinner(playersCards, communityCards);
+            CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
+
+        }
+
+        [TestMethod]
+        public void TestDetermineWinnerStraight()
+        {
+            List<Card> communityCards = new List<Card>();
+            communityCards.Add(new Card("2H"));
+            communityCards.Add(new Card("3D"));
+            communityCards.Add(new Card("4C"));
+            communityCards.Add(new Card("JH"));
+            communityCards.Add(new Card("8H"));
+            List<Card> cardsForPlayer1 = new List<Card>();
+            cardsForPlayer1.Add(new Card("5H"));
+            cardsForPlayer1.Add(new Card("6S"));
+            List<Card> cardsForPlayer2 = new List<Card>();
+            cardsForPlayer2.Add(new Card("AH"));
+            cardsForPlayer2.Add(new Card("5S"));
+            PlayerHand player1 = new PlayerHand(cardsForPlayer1, "yoav");
+            PlayerHand player2 = new PlayerHand(cardsForPlayer2, "roy");
+            List<string> nameOfWinner = new List<string>();
+            nameOfWinner.Add(player1.username);
+            List<PlayerHand> playersCards = new List<PlayerHand>();
+            playersCards.Add(player1);
+            playersCards.Add(player2);
+            List<string> winners = PokerRules.DetermineWinner(playersCards, communityCards);
+            CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
+
+        }
+
+        [TestMethod]
+        public void TestDetermineWinnerFlush()
+        {
+            List<Card> communityCards = new List<Card>();
+            communityCards.Add(new Card("2H"));
+            communityCards.Add(new Card("KD"));
+            communityCards.Add(new Card("QC"));
+            communityCards.Add(new Card("JH"));
+            communityCards.Add(new Card("7H"));
+            List<Card> cardsForPlayer1 = new List<Card>();
+            cardsForPlayer1.Add(new Card("KH"));
+            cardsForPlayer1.Add(new Card("3H"));
+            List<Card> cardsForPlayer2 = new List<Card>();
+            cardsForPlayer2.Add(new Card("QH"));
+            cardsForPlayer2.Add(new Card("5H"));
+            PlayerHand player1 = new PlayerHand(cardsForPlayer1, "yoav");
+            PlayerHand player2 = new PlayerHand(cardsForPlayer2, "roy");
+            List<string> nameOfWinner = new List<string>();
+            nameOfWinner.Add(player1.username);
+            List<PlayerHand> playersCards = new List<PlayerHand>();
+            playersCards.Add(player1);
+            playersCards.Add(player2);
+            List<string> winners = PokerRules.DetermineWinner(playersCards, communityCards);
+            CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
+
+        }
+
+        [TestMethod]
+        public void TestDetermineWinnerFullHouse()
+        {
+            List<Card> communityCards = new List<Card>();
+            communityCards.Add(new Card("2H"));
+            communityCards.Add(new Card("2S"));
+            communityCards.Add(new Card("2C"));
+            communityCards.Add(new Card("JH"));
+            communityCards.Add(new Card("7H"));
+            List<Card> cardsForPlayer1 = new List<Card>();
+            cardsForPlayer1.Add(new Card("3H"));
+            cardsForPlayer1.Add(new Card("3S"));
+            List<Card> cardsForPlayer2 = new List<Card>();
+            cardsForPlayer2.Add(new Card("AH"));
+            cardsForPlayer2.Add(new Card("AS"));
+            PlayerHand player1 = new PlayerHand(cardsForPlayer1, "yoav");
+            PlayerHand player2 = new PlayerHand(cardsForPlayer2, "roy");
+            List<string> nameOfWinner = new List<string>();
+            nameOfWinner.Add(player2.username);
+            List<PlayerHand> playersCards = new List<PlayerHand>();
+            playersCards.Add(player1);
+            playersCards.Add(player2);
+            List<string> winners = PokerRules.DetermineWinner(playersCards, communityCards);
+            CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
+
+        }
+
+        [TestMethod]
+        public void TestDetermineWinnerSpecificFullHouse()
+        {
+            List<Card> communityCards = new List<Card>();
+            communityCards.Add(new Card("2H"));
+            communityCards.Add(new Card("2S"));
+            communityCards.Add(new Card("2C"));
+            communityCards.Add(new Card("3C"));
+            communityCards.Add(new Card("7H"));
+            List<Card> cardsForPlayer1 = new List<Card>();
+            cardsForPlayer1.Add(new Card("3H"));
+            cardsForPlayer1.Add(new Card("7S"));
+            List<Card> cardsForPlayer2 = new List<Card>();
+            cardsForPlayer2.Add(new Card("AH"));
+            cardsForPlayer2.Add(new Card("AS"));
+            PlayerHand player1 = new PlayerHand(cardsForPlayer1, "yoav");
+            PlayerHand player2 = new PlayerHand(cardsForPlayer2, "roy");
+            List<string> nameOfWinner = new List<string>();
+            nameOfWinner.Add(player2.username);
+            List<PlayerHand> playersCards = new List<PlayerHand>();
+            playersCards.Add(player1);
+            playersCards.Add(player2);
+            List<string> winners = PokerRules.DetermineWinner(playersCards, communityCards);
+            CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
+
+        }
+
+        [TestMethod]
+        public void TestDetermineWinnerSpecificFullHouse2()
+        {
+            List<Card> communityCards = new List<Card>();
+            communityCards.Add(new Card("2H"));
+            communityCards.Add(new Card("2S"));
+            communityCards.Add(new Card("2C"));
+            communityCards.Add(new Card("3C"));
+            communityCards.Add(new Card("7H"));
+            List<Card> cardsForPlayer1 = new List<Card>();
+            cardsForPlayer1.Add(new Card("3H"));
+            cardsForPlayer1.Add(new Card("7S"));
+            List<Card> cardsForPlayer2 = new List<Card>();
+            cardsForPlayer2.Add(new Card("3D"));
+            cardsForPlayer2.Add(new Card("7D"));
+            PlayerHand player1 = new PlayerHand(cardsForPlayer1, "yoav");
+            PlayerHand player2 = new PlayerHand(cardsForPlayer2, "roy");
+            List<string> nameOfWinner = new List<string>();
+            nameOfWinner = null;
+            List<PlayerHand> playersCards = new List<PlayerHand>();
+            playersCards.Add(player1);
+            playersCards.Add(player2);
+            List<string> winners = PokerRules.DetermineWinner(playersCards, communityCards);
+            CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
 
         }
 
 
+        [TestMethod]
+        public void TestDetermineWinnerFourOfAKind()
+        {
+            List<Card> communityCards = new List<Card>();
+            communityCards.Add(new Card("2H"));
+            communityCards.Add(new Card("2S"));
+            communityCards.Add(new Card("QC"));
+            communityCards.Add(new Card("JH"));
+            communityCards.Add(new Card("JC"));
+            List<Card> cardsForPlayer1 = new List<Card>();
+            cardsForPlayer1.Add(new Card("2C"));
+            cardsForPlayer1.Add(new Card("2D"));
+            List<Card> cardsForPlayer2 = new List<Card>();
+            cardsForPlayer2.Add(new Card("JD"));
+            cardsForPlayer2.Add(new Card("JS"));
+            PlayerHand player1 = new PlayerHand(cardsForPlayer1, "yoav");
+            PlayerHand player2 = new PlayerHand(cardsForPlayer2, "roy");
+            List<string> nameOfWinner = new List<string>();
+            nameOfWinner.Add(player2.username);
+            List<PlayerHand> playersCards = new List<PlayerHand>();
+            playersCards.Add(player1);
+            playersCards.Add(player2);
+            List<string> winners = PokerRules.DetermineWinner(playersCards, communityCards);
+            CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
 
+        }
+
+        [TestMethod]
+        public void TestDetermineWinnerStraightFlush()
+        {
+            List<Card> communityCards = new List<Card>();
+            communityCards.Add(new Card("2H"));
+            communityCards.Add(new Card("3H"));
+            communityCards.Add(new Card("4H"));
+            communityCards.Add(new Card("5H"));
+            communityCards.Add(new Card("JC"));
+            List<Card> cardsForPlayer1 = new List<Card>();
+            cardsForPlayer1.Add(new Card("AH"));
+            cardsForPlayer1.Add(new Card("2D"));
+            List<Card> cardsForPlayer2 = new List<Card>();
+            cardsForPlayer2.Add(new Card("6H"));
+            cardsForPlayer2.Add(new Card("JS"));
+            PlayerHand player1 = new PlayerHand(cardsForPlayer1, "yoav");
+            PlayerHand player2 = new PlayerHand(cardsForPlayer2, "roy");
+            List<string> nameOfWinner = new List<string>();
+            nameOfWinner.Add(player2.username);
+            List<PlayerHand> playersCards = new List<PlayerHand>();
+            playersCards.Add(player1);
+            playersCards.Add(player2);
+            List<string> winners = PokerRules.DetermineWinner(playersCards, communityCards);
+            CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
+
+        }
+
+        [TestMethod]
+        public void TestDetermineWinnerStraightFlush2()
+        {
+            List<Card> communityCards = new List<Card>();
+            communityCards.Add(new Card("3H"));
+            communityCards.Add(new Card("4H"));
+            communityCards.Add(new Card("5H"));
+            communityCards.Add(new Card("KH"));
+            communityCards.Add(new Card("JC"));
+            List<Card> cardsForPlayer1 = new List<Card>();
+            cardsForPlayer1.Add(new Card("AH"));
+            cardsForPlayer1.Add(new Card("2H"));
+            List<Card> cardsForPlayer2 = new List<Card>();
+            cardsForPlayer2.Add(new Card("6H"));
+            cardsForPlayer2.Add(new Card("7H"));
+            PlayerHand player1 = new PlayerHand(cardsForPlayer1, "yoav");
+            PlayerHand player2 = new PlayerHand(cardsForPlayer2, "roy");
+            List<string> nameOfWinner = new List<string>();
+            nameOfWinner.Add(player2.username);
+            List<PlayerHand> playersCards = new List<PlayerHand>();
+            playersCards.Add(player1);
+            playersCards.Add(player2);
+            List<string> winners = PokerRules.DetermineWinner(playersCards, communityCards);
+            CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
+
+        }
+
+        [TestMethod]
+        public void TestDetermineWinnerStraightFlush3()
+        {
+            List<Card> communityCards = new List<Card>();
+            communityCards.Add(new Card("3H"));
+            communityCards.Add(new Card("4H"));
+            communityCards.Add(new Card("5H"));
+            communityCards.Add(new Card("6H"));
+            communityCards.Add(new Card("6D"));
+            List<Card> cardsForPlayer1 = new List<Card>();
+            cardsForPlayer1.Add(new Card("6C"));
+            cardsForPlayer1.Add(new Card("2H"));
+            List<Card> cardsForPlayer2 = new List<Card>();
+            cardsForPlayer2.Add(new Card("4D"));
+            cardsForPlayer2.Add(new Card("7H"));
+            PlayerHand player1 = new PlayerHand(cardsForPlayer1, "yoav");
+            PlayerHand player2 = new PlayerHand(cardsForPlayer2, "roy");
+            List<string> nameOfWinner = new List<string>();
+            nameOfWinner.Add(player2.username);
+            List<PlayerHand> playersCards = new List<PlayerHand>();
+            playersCards.Add(player1);
+            playersCards.Add(player2);
+            List<string> winners = PokerRules.DetermineWinner(playersCards, communityCards);
+            CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
+
+        }
+
+        [TestMethod]
+        public void TestDetermineWinnerRoyalFlush()
+        {
+            List<Card> communityCards = new List<Card>();
+            communityCards.Add(new Card("AH"));
+            communityCards.Add(new Card("QH"));
+            communityCards.Add(new Card("10H"));
+            communityCards.Add(new Card("KH"));
+            communityCards.Add(new Card("JC"));
+            List<Card> cardsForPlayer1 = new List<Card>();
+            cardsForPlayer1.Add(new Card("JH"));
+            cardsForPlayer1.Add(new Card("7S"));
+            List<Card> cardsForPlayer2 = new List<Card>();
+            cardsForPlayer2.Add(new Card("6H"));
+            cardsForPlayer2.Add(new Card("7H"));
+            PlayerHand player1 = new PlayerHand(cardsForPlayer1, "yoav");
+            PlayerHand player2 = new PlayerHand(cardsForPlayer2, "roy");
+            List<string> nameOfWinner = new List<string>();
+            nameOfWinner.Add(player1.username);
+            List<PlayerHand> playersCards = new List<PlayerHand>();
+            playersCards.Add(player1);
+            playersCards.Add(player2);
+            List<string> winners = PokerRules.DetermineWinner(playersCards, communityCards);
+            CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
+
+        }
 
     }
 }

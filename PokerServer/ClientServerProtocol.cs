@@ -56,6 +56,10 @@ namespace PokerServer
         
         public int bigBlindIndex { get; set; }
 
+        public string allUserDetails {  get; set; }
+
+        public string raiseType {  get; set; }
+
 
 
 
@@ -114,6 +118,7 @@ namespace PokerServer
                         this.smallBlindIndex = Convert.ToInt32(answer[5]);
                         this.bigBlindIndex = Convert.ToInt32(answer[6]);
                         this.playersNumber = Convert.ToInt32(answer[7]);
+                        this.allUserDetails = answer[8];
 
                     }
                     catch
@@ -127,6 +132,7 @@ namespace PokerServer
                 case Command.UPDATE_BET_MONEY:
                     this.betMoney = Convert.ToInt32(answer[1]);
                     this.username = answer[2];
+                    this.raiseType = answer[3];
                     break;
                 case Command.SUCCES:
                     this.username = answer[1];
@@ -182,6 +188,8 @@ namespace PokerServer
                     answer += this.smallBlindIndex.ToString() + "\n";
                     answer += this.bigBlindIndex.ToString() + "\n";
                     answer += this.playersNumber.ToString() + "\n";
+                    answer += this.allUserDetails + "\n";
+
 
                     break;
                 case Command.RAISE:
@@ -190,6 +198,7 @@ namespace PokerServer
                 case Command.UPDATE_BET_MONEY:
                     answer += this.betMoney.ToString() + "\n";
                     answer += this.username + "\n";
+                    answer += this.raiseType + "\n";
                     break;
                 case Command.SUCCES:
                     answer += this.username + "\n";

@@ -15,9 +15,18 @@ namespace PokerServer
 
         public static int GetCardValue(Card card)
         {
+            //string value = "";
             string value = card.nameOfCard.Substring(0, card.nameOfCard.Length - 1);
+            //try
+            //{
+            //    value = card.nameOfCard.Substring(0, card.nameOfCard.Length - 1);
+            //}
+            //catch {
+            //    value = null;
+            //}
             switch (value)
             {
+                //case null: return 0;
                 case "A": return 14;
                 case "K": return 13;
                 case "Q": return 12;
