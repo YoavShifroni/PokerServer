@@ -10,8 +10,8 @@ namespace PokerServer
     {
         REGISTRATION,
         LOGIN,
-        OPEN_CARDS  ,
-        RAISE   ,
+        OPEN_CARDS,
+        RAISE,
         CHECK,
         FOLD,
         SUCCES,
@@ -44,21 +44,22 @@ namespace PokerServer
 
         public int minimumBet { get; set; }
 
-        public int allTimeProfit {  get; set; }
+        public int allTimeProfit { get; set; }
 
         public int playerIndex { get; set; }
 
         public int dealerIndex { get; set; }
 
-        public int smallBlindIndex { get; set; }
-
+        public string smallBlindUsername { get; set; }
         public int playersNumber { get; set; }
-        
-        public int bigBlindIndex { get; set; }
 
-        public string allUserDetails {  get; set; }
+        public string bigBlindUsername { get; set; }
 
-        public string raiseType {  get; set; }
+        public string allUserDetails { get; set; }
+
+        public string raiseType { get; set; }
+
+        public string allPlayersAndCards {  get; set; }
 
 
 
@@ -115,8 +116,8 @@ namespace PokerServer
                         this.allTimeProfit = Convert.ToInt32(answer[2]);
                         this.playerIndex = Convert.ToInt32(answer[3]);
                         this.dealerIndex = Convert.ToInt32(answer[4]);
-                        this.smallBlindIndex = Convert.ToInt32(answer[5]);
-                        this.bigBlindIndex = Convert.ToInt32(answer[6]);
+                        this.smallBlindUsername = answer[5];
+                        this.bigBlindUsername = answer[6];
                         this.playersNumber = Convert.ToInt32(answer[7]);
                         this.allUserDetails = answer[8];
 
@@ -139,6 +140,7 @@ namespace PokerServer
                     break;
                 case Command.TELL_EVERYONE_WHO_WON:
                     this.username = answer[1];
+                    this.allPlayersAndCards = answer[2];
                     break;
                 case Command.YOUR_TURN:
                     this.minimumBet = Convert.ToInt32(answer[1]);
@@ -185,8 +187,8 @@ namespace PokerServer
                     answer += this.allTimeProfit.ToString() + "\n";
                     answer += this.playerIndex.ToString() + "\n";
                     answer += this.dealerIndex.ToString() + "\n";
-                    answer += this.smallBlindIndex.ToString() + "\n";
-                    answer += this.bigBlindIndex.ToString() + "\n";
+                    answer += this.smallBlindUsername + "\n";
+                    answer += this.bigBlindUsername + "\n";
                     answer += this.playersNumber.ToString() + "\n";
                     answer += this.allUserDetails + "\n";
 
@@ -205,6 +207,7 @@ namespace PokerServer
                     break;
                 case Command.TELL_EVERYONE_WHO_WON:
                     answer += this.username + "\n";
+                    answer += this.allPlayersAndCards + "\n";
                     break;
                 case Command.YOUR_TURN:
                     answer += this.minimumBet.ToString() + "\n";

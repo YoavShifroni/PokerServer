@@ -23,17 +23,17 @@ namespace PokerServer
         private SqlConnect sqlConnect;
         private PokerClientConnection pokerClientConnection;
         private GameManager gameManager;
-        private Card[] cards ;
+        private Card[] cards;
 
-        public GameHandlerForSinglePlayer(PokerClientConnection pokerClientConnection) 
+        public GameHandlerForSinglePlayer(PokerClientConnection pokerClientConnection)
         {
             gameManager = GameManager.GetInstance(this);
             sqlConnect = new SqlConnect();
             this.pokerClientConnection = pokerClientConnection;
-            
+
         }
 
-        public void HandleCommand(string command) 
+        public void HandleCommand(string command)
         {
             ClientServerProtocol c1 = new ClientServerProtocol(command);
             switch (c1.command)
@@ -42,7 +42,7 @@ namespace PokerServer
                     this.handleLogin(c1.username, c1.password);
                     break;
                 case Command.REGISTRATION:
-                    this.handleRegistration(c1.username, c1.password, c1.firstName, c1.lastName, c1.email, c1.city, c1  .gender);
+                    this.handleRegistration(c1.username, c1.password, c1.firstName, c1.lastName, c1.email, c1.city, c1.gender);
                     return;
                 case Command.START_GAME:
                     this.gameManager.StartGame();
@@ -61,7 +61,10 @@ namespace PokerServer
         }
 
 
-
+        public string getUserCards()
+        {
+            return this.cards.ElementAt(0).ToString() + "," + this.cards.ElementAt(1).ToString() + ",";
+        }
 
         private void handleFold()
         {
@@ -123,19 +126,19 @@ namespace PokerServer
             }
             this.username = username;
             this.playerMoney = 1000;
-            this.userId = sqlConnect.InsertNewUser(username,password, firstName, lastName, email, city, gender, 0);
+            this.userId = sqlConnect.InsertNewUser(username, password, firstName, lastName, email, city, gender, 0);
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.command = Command.SUCCES;
             clientServerProtocol.username = username;
             pokerClientConnection.SendMessage(clientServerProtocol.generate());
-            string userNames =GameManager.getAllUsername();
+            string userNames = GameManager.getAllUsername();
             clientServerProtocol.command = Command.USERNAME_OF_CONNECTED_PLAYERS;
             clientServerProtocol.AllUsernames = userNames;
             pokerClientConnection.Broadcast(clientServerProtocol.generate());
 
         }
 
-        
+
 
         public string getUsername()
         {
@@ -150,7 +153,7 @@ namespace PokerServer
         public void setCards(Card[] cards2)
         {
             this.cards = new Card[cards2.Length];
-            for(int i = 0; i<cards2.Length;i++)
+            for (int i = 0; i < cards2.Length; i++)
             {
                 this.cards[i] = cards2[i];
             }
@@ -171,6 +174,7 @@ namespace PokerServer
         public void UpdateMoneyWhenGameEndsForWinner(int moneyOnTheTable)
         {
             sqlConnect.UpdateAllTimeProfitForWinner(this.userId, moneyOnTheTable - this.betMoney);
+            this.playerMoney += moneyOnTheTable;
         }
 
         public PlayerHand GetPlayerHand()
@@ -186,4 +190,6 @@ namespace PokerServer
 
         }
     }
+
+        
 }

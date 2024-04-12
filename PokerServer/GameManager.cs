@@ -30,8 +30,9 @@ namespace PokerServer
         private List<Card> communityCards = new List<Card>();
         private int _activePlayerIndex = 0;
         private int smallBlindIndex;
+        private int dealerIndex = -1;
+        private int bigBlindIndex;
         private int moneyOnTheTable = 0;
-        private bool agreeOnBet = true;
         public Stage stage;
         private int minimumBet;
         private Random rnd = new Random();
@@ -97,12 +98,16 @@ namespace PokerServer
 
         public void StartGame()
         {
+            if(this.dealerIndex == -1)
+            {
+                this.dealerIndex = rnd.Next(0, _allPlayers.Count);
+                this.smallBlindIndex = (dealerIndex + 1) % _allPlayers.Count;
+                this.bigBlindIndex = (this.smallBlindIndex + 1) % _allPlayers.Count;
+            }
             int count = 0;
-            int dealerIndex = rnd.Next(0, _allPlayers.Count);
-            this.smallBlindIndex = (dealerIndex+1)%_allPlayers.Count;
-            int bigBlindIndex = (this.smallBlindIndex+1)%_allPlayers.Count;
             int playersNumber = _allPlayers.Count;
-            
+            string smallBlindName = _allPlayers.ElementAt(this.smallBlindIndex).username;
+            string bigBlindName = _allPlayers.ElementAt(bigBlindIndex).username;
 
             foreach (GameHandlerForSinglePlayer player in _allPlayers)
             {
@@ -114,8 +119,8 @@ namespace PokerServer
                 clientServerProtocol2.allTimeProfit = player.GetAllTimeProfit();
                 clientServerProtocol2.playerIndex = count;
                 clientServerProtocol2.dealerIndex = dealerIndex;
-                clientServerProtocol2.smallBlindIndex = this.smallBlindIndex;
-                clientServerProtocol2.bigBlindIndex = bigBlindIndex;
+                clientServerProtocol2.smallBlindUsername = smallBlindName;
+                clientServerProtocol2.bigBlindUsername = bigBlindName;
                 clientServerProtocol2.playersNumber = playersNumber;
                 clientServerProtocol2.allUserDetails = allUsers;
                 player.SendMessage(clientServerProtocol2.generate());
@@ -178,12 +183,13 @@ namespace PokerServer
             {
                 this._activePlayerIndex = (this.smallBlindIndex)%_allPlayers.Count;
             }
-            this.agreeOnBet = true;
+            bool agreeOnBet = true;
             int betMoney = 0;
             GameHandlerForSinglePlayer winner = this.checkIfSingleWinner();
             if(winner != null)
             {
                 this.NotifyWinner(winner.username);
+                this.RestartGame();
                 return;
             }
             foreach (GameHandlerForSinglePlayer player in _allPlayers)
@@ -205,20 +211,20 @@ namespace PokerServer
                 }
             }
 
-            if(agreeOnBet == true)
+            if(agreeOnBet)
             {
                 // Check that all players had their turn in this round at least one time
                 foreach(GameHandlerForSinglePlayer player in _allPlayers)
                 {
-                    if(player.lastStageTheUserPlayed != this.stage)
+                    if(player.lastStageTheUserPlayed != this.stage && player.isInGame)
                     {
-                        this.agreeOnBet = false;
+                        agreeOnBet = false;
                         break;
                     }
                 }
             }
 
-            if(this.agreeOnBet == true && betMoney != 0)
+            if(agreeOnBet  && betMoney != 0)
             {
                 switch (this.stage) 
                 {
@@ -279,6 +285,7 @@ namespace PokerServer
             {
                 this.HandleWinner(null);
                 this.NotifyWinner("It's a tie!");
+                this.RestartGame();
                 return;
             }
             string allWinnerNames = "";
@@ -291,6 +298,7 @@ namespace PokerServer
             }
             allWinnerNames = allWinnerNames.Substring(0, allWinnerNames.Length - 2);
             this.NotifyWinner(allWinnerNames);
+            this.RestartGame();
 
         }
 
@@ -331,9 +339,15 @@ namespace PokerServer
 
         private void NotifyWinner(string allWinnerNames)
         {
-
+            string allPlayersAndCards = "";
+            foreach(GameHandlerForSinglePlayer gm in _allPlayers)
+            {
+                allPlayersAndCards += gm.username + "," + gm.getUserCards();
+            }
+            allPlayersAndCards = allPlayersAndCards.Substring(0,allPlayersAndCards.Length - 1);
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.username = allWinnerNames;
+            clientServerProtocol.allPlayersAndCards = allPlayersAndCards;
             clientServerProtocol.command = Command.TELL_EVERYONE_WHO_WON;
             this.Brodcast(clientServerProtocol.generate());
         }
@@ -358,6 +372,24 @@ namespace PokerServer
             }
             return null;
             
+        }
+
+        private void RestartGame()
+        {
+            foreach(GameHandlerForSinglePlayer gm in _allPlayers)
+            {
+                gm.betMoney = 0;
+                gm.lastStageTheUserPlayed = Stage.NONE;
+                gm.isInGame = true;
+                gm.highCard = null;
+            }
+            stage = Stage.BET_AGREE_ROUND_ONE;
+            this.dealerIndex = (this.dealerIndex + 1)%_allPlayers.Count;
+            this.smallBlindIndex = (this.dealerIndex + 1) % _allPlayers.Count;
+            this.bigBlindIndex = (this.smallBlindIndex + 1) % _allPlayers.Count;
+            this.moneyOnTheTable = 0;
+            this.minimumBet = 0;
+            this.communityCards.Clear();
         }
 
         public void handleRaise(int betMoney, string username, bool isRaise, bool isCheck, bool isFold)
