@@ -24,6 +24,7 @@ namespace PokerServer
         YOUR_TURN,
         NOTIFY_TURN,
         TELL_EVERYONE_WHO_WON,
+        FINAL_WINNER,
     };
 
     public class ClientServerProtocol

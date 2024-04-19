@@ -94,6 +94,10 @@ namespace PokerServer
         {
             int highestBet = this.gameManager.highestBet();
             int delta = highestBet - this.betMoney;
+            if(this.playerMoney - delta < 0)
+            {
+                delta = this.playerMoney;
+            }
             this.betMoney = highestBet;
             this.playerMoney -= delta;
             this.lastStageTheUserPlayed = this.gameManager.stage;

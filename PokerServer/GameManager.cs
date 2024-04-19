@@ -314,49 +314,38 @@ namespace PokerServer
         {
             List<PlayerHand> playersCards = new List<PlayerHand>();
             Dictionary<string, GameHandlerForSinglePlayer> playersMap = new Dictionary<string, GameHandlerForSinglePlayer>();
-            List<string> theWinners = null;
-            List<GameHandlerForSinglePlayer> winners = null;
-            List<GameHandlerForSinglePlayer> winner = null;
-            try
-            {     
-                foreach (GameHandlerForSinglePlayer player in _allPlayers)
-                {
-                    if (player.isInGame)
-                    {
-                        playersMap.Add(player.username, player);
-                        playersCards.Add(player.GetPlayerHand());
-                    }
-                }
-                theWinners = PokerRules.DetermineWinner(playersCards, communityCards);
-                if (theWinners.Count > 1)
-                {
-                    winners = new List<GameHandlerForSinglePlayer>();
-                    string nameOfWinners = "It's a tie bettwen: ";
-                    foreach (string s in theWinners)
-                    {
-                        winners.Add(playersMap[s]);
-                        nameOfWinners += s + ", ";
-                    }
-                    nameOfWinners.Substring(0, nameOfWinners.Length - 2);
-                    this.HandleWinner(winners);
-                    this.NotifyWinner(nameOfWinners, theWinners[0]);
-                    this.RestartGame();
-                    return;
-                }
-                // geting here only if there is only one winner
-                string allWinnerNames = "";
-                winner = new List<GameHandlerForSinglePlayer> { playersMap[theWinners.ElementAt(0)] };
-                allWinnerNames = theWinners.ElementAt(0);
-                this.HandleWinner(winner);
-                this.NotifyWinner(allWinnerNames, allWinnerNames);
-                this.RestartGame();
-            }
-            catch(Exception e)
+            foreach (GameHandlerForSinglePlayer player in _allPlayers)
             {
-                Console.WriteLine(e.ToString());
+                if (player.isInGame)
+                {
+                    playersMap.Add(player.username, player);
+                    playersCards.Add(player.GetPlayerHand());
+                }
             }
+            List<string> theWinners = PokerRules.DetermineWinner(playersCards, communityCards);
+            if (theWinners.Count > 1)
+            {
+                List<GameHandlerForSinglePlayer> winners = new List<GameHandlerForSinglePlayer>();
+                string nameOfWinners = "It's a tie bettwen: ";
+                foreach (string s in theWinners)
+                {
+                    winners.Add(playersMap[s]);
+                    nameOfWinners += s + ", ";
+                }
+                nameOfWinners.Substring(0, nameOfWinners.Length - 2);
+                this.HandleWinner(winners);
+                this.NotifyWinner(nameOfWinners, theWinners[0]);
+                this.RestartGame();
+                return;
+            }
+            // geting here only if there is only one winner
+            string allWinnerNames = "";
+            List<GameHandlerForSinglePlayer> winner = new List<GameHandlerForSinglePlayer> { playersMap[theWinners.ElementAt(0)] };
+            allWinnerNames = theWinners.ElementAt(0);
+            this.HandleWinner(winner);
+            this.NotifyWinner(allWinnerNames, allWinnerNames);
+            this.RestartGame();
             
-
         }
 
         /// <summary>
@@ -436,6 +425,7 @@ namespace PokerServer
         /// </summary>
         private void RestartGame()
         {
+            
             List<GameHandlerForSinglePlayer> toRemove = new List<GameHandlerForSinglePlayer>();
             foreach(GameHandlerForSinglePlayer gm in _allPlayers)
             {
@@ -449,11 +439,7 @@ namespace PokerServer
                 else
                 {
                     toRemove.Add(gm);
-                    try {
-                        gm.Disconnect();
-                    } catch (Exception e) { 
-                        Console.WriteLine(e.ToString());    
-                    }
+                    gm.Disconnect();
                 }
                
             }
@@ -461,14 +447,35 @@ namespace PokerServer
             {
                 _allPlayers.Remove(player);
             }
+            if(_allPlayers.Count == 1)
+            {
+                ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
+                clientServerProtocol.command = Command.FINAL_WINNER;
+                _allPlayers.First().SendMessage(clientServerProtocol.generate());
+                this.RestartGameManager();
+                return;
+            }
             this._deck.RestartGame();
             stage = Stage.BET_AGREE_ROUND_ONE;
-            this.dealerIndex = (this.dealerIndex + 1)%_allPlayers.Count;
+            this.dealerIndex = (this.dealerIndex + 1) % _allPlayers.Count;
             this.smallBlindIndex = (this.dealerIndex + 1) % _allPlayers.Count;
             this.bigBlindIndex = (this.smallBlindIndex + 1) % _allPlayers.Count;
             this.moneyOnTheTable = 0;
             this.minimumBet = 0;
             this.communityCards.Clear();
+
+        }
+
+        private void RestartGameManager()
+        {
+            _allPlayers.Clear();
+            this.isActiveGame = false;
+            this.dealerIndex = -1;
+            stage = Stage.BET_AGREE_ROUND_ONE;
+            this.moneyOnTheTable = 0;
+            this.minimumBet = 0;
+            this.communityCards.Clear();
+
         }
 
         /// <summary>
