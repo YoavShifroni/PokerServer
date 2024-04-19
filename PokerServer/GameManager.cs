@@ -33,8 +33,9 @@ namespace PokerServer
         private int dealerIndex = -1;
         private int bigBlindIndex;
         private int moneyOnTheTable = 0;
-        public Stage stage;
+        public Stage stage ;
         private int minimumBet;
+        public bool isActiveGame = false;
         private Random rnd = new Random();
 
         public const int MIN_BET_FACTOR = 2;
@@ -45,7 +46,10 @@ namespace PokerServer
             {
                 instance = new GameManager();
             }
-            _allPlayers.AddLast(gameHandlerForSinglePlayer);
+            if(gameHandlerForSinglePlayer != null)
+            {
+                _allPlayers.AddLast(gameHandlerForSinglePlayer);
+            }
             return instance;
         }
 
@@ -55,6 +59,11 @@ namespace PokerServer
             stage = Stage.BET_AGREE_ROUND_ONE;
         }
 
+        /// <summary>
+        /// the function return the cards that will send to the table
+        /// </summary>
+        /// <param name="length"></param>
+        /// <returns></returns>
         public Card[] getCardsFromTable(int length)
         {
             Card[] answer = new Card[length];
@@ -67,6 +76,10 @@ namespace PokerServer
 
         }
 
+        /// <summary>
+        /// the function return string that contain all the username of connected players devide by ','
+        /// </summary>
+        /// <returns></returns>
         public static string getAllUsername()
         {
             string answer = "";
@@ -78,15 +91,22 @@ namespace PokerServer
             return answer;
         }
 
+        /// <summary>
+        /// the function return string that contain all username and their money
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public string getAllUsernameAndTheirMoney(int userId)
         {
             string answer = "";
-            foreach (GameHandlerForSinglePlayer player in _allPlayers)
+            List< GameHandlerForSinglePlayer> sort = _allPlayers.OrderBy(x => x.userId).ToList();
+       
+            GameHandlerForSinglePlayer myUser = sort.Find(x => x.userId == userId);
+            int indexOfUserInList = sort.IndexOf(myUser);
+            for(int i=1; i< _allPlayers.Count; ++i)
             {
-                if(player.userId == userId)
-                {
-                    continue;
-                }
+                int index = (indexOfUserInList + i) % _allPlayers.Count;
+                GameHandlerForSinglePlayer player = sort.ElementAt(index);
                 answer += player.username + ",";
                 answer += player.playerMoney + ",";
             }
@@ -95,9 +115,13 @@ namespace PokerServer
         }
 
 
-
+        /// <summary>
+        /// this function is responsible for starting the game, it handle all the things that we need 
+        /// for the game to start and send them to the client 
+        /// </summary>
         public void StartGame()
         {
+            this.isActiveGame = true;
             if(this.dealerIndex == -1)
             {
                 this.dealerIndex = rnd.Next(0, _allPlayers.Count);
@@ -106,6 +130,8 @@ namespace PokerServer
             }
             int count = 0;
             int playersNumber = _allPlayers.Count;
+            Console.WriteLine("length:" + playersNumber);
+            string dealerName = _allPlayers.ElementAt(this.dealerIndex).username;
             string smallBlindName = _allPlayers.ElementAt(this.smallBlindIndex).username;
             string bigBlindName = _allPlayers.ElementAt(bigBlindIndex).username;
 
@@ -118,7 +144,7 @@ namespace PokerServer
                 clientServerProtocol2.playerMoney = player.playerMoney;
                 clientServerProtocol2.allTimeProfit = player.GetAllTimeProfit();
                 clientServerProtocol2.playerIndex = count;
-                clientServerProtocol2.dealerIndex = dealerIndex;
+                clientServerProtocol2.dealerName = dealerName;
                 clientServerProtocol2.smallBlindUsername = smallBlindName;
                 clientServerProtocol2.bigBlindUsername = bigBlindName;
                 clientServerProtocol2.playersNumber = playersNumber;
@@ -142,6 +168,10 @@ namespace PokerServer
 
         }
         
+        /// <summary>
+        /// the function send the cards for the table 
+        /// </summary>
+        /// <param name="numberOfCards"></param>
         public void sendCardsForTable(int numberOfCards)
         {
             int place=0;
@@ -176,7 +206,10 @@ namespace PokerServer
 
 
 
-
+        /// <summary>
+        /// the function deal with changing the turn of the players
+        /// </summary>
+        /// <param name="firstTurn"></param>
         public void nextTurn(bool firstTurn)
         {
             if (firstTurn)
@@ -188,7 +221,8 @@ namespace PokerServer
             GameHandlerForSinglePlayer winner = this.checkIfSingleWinner();
             if(winner != null)
             {
-                this.NotifyWinner(winner.username);
+                this.NotifyWinner(winner.username, winner.username);
+                this.HandleWinner(new List<GameHandlerForSinglePlayer> {winner});
                 this.RestartGame();
                 return;
             }
@@ -262,82 +296,100 @@ namespace PokerServer
                     clientServerProtocol.minimumBet = this.minimumBet;
                     clientServerProtocol.command = Command.YOUR_TURN;
                     nextPlayer.SendMessage(clientServerProtocol.generate());
+
+                    ClientServerProtocol clientServerProtocol1 = new ClientServerProtocol();
+                    clientServerProtocol1.username = nextPlayer.username;
+                    clientServerProtocol1.command = Command.NOTIFY_TURN;
+                    this.Brodcast(clientServerProtocol1.generate());
                     break;
                 }
             }
 
         }
 
+        /// <summary>
+        /// the function decide who the winner is 
+        /// </summary>
         private void DecideWinner()
         {
             List<PlayerHand> playersCards = new List<PlayerHand>();
-            Dictionary<string, GameHandlerForSinglePlayer> playersMap = new Dictionary<string, GameHandlerForSinglePlayer> ();
-            foreach(GameHandlerForSinglePlayer player in _allPlayers)
+            Dictionary<string, GameHandlerForSinglePlayer> playersMap = new Dictionary<string, GameHandlerForSinglePlayer>();
+            List<string> theWinners = null;
+            List<GameHandlerForSinglePlayer> winners = null;
+            List<GameHandlerForSinglePlayer> winner = null;
+            try
+            {     
+                foreach (GameHandlerForSinglePlayer player in _allPlayers)
+                {
+                    if (player.isInGame)
+                    {
+                        playersMap.Add(player.username, player);
+                        playersCards.Add(player.GetPlayerHand());
+                    }
+                }
+                theWinners = PokerRules.DetermineWinner(playersCards, communityCards);
+                if (theWinners.Count > 1)
+                {
+                    winners = new List<GameHandlerForSinglePlayer>();
+                    string nameOfWinners = "It's a tie bettwen: ";
+                    foreach (string s in theWinners)
+                    {
+                        winners.Add(playersMap[s]);
+                        nameOfWinners += s + ", ";
+                    }
+                    nameOfWinners.Substring(0, nameOfWinners.Length - 2);
+                    this.HandleWinner(winners);
+                    this.NotifyWinner(nameOfWinners, theWinners[0]);
+                    this.RestartGame();
+                    return;
+                }
+                // geting here only if there is only one winner
+                string allWinnerNames = "";
+                winner = new List<GameHandlerForSinglePlayer> { playersMap[theWinners.ElementAt(0)] };
+                allWinnerNames = theWinners.ElementAt(0);
+                this.HandleWinner(winner);
+                this.NotifyWinner(allWinnerNames, allWinnerNames);
+                this.RestartGame();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            
+
+        }
+
+        /// <summary>
+        /// the function handle the winners and the losers at the end of the game (Update All Time Profit)
+        /// </summary>
+        /// <param name="winner"></param>
+        public void HandleWinner(List<GameHandlerForSinglePlayer> winner)
+        {
+            int moneyToADD = this.moneyOnTheTable / winner.Count;
+           
+            foreach (GameHandlerForSinglePlayer player in _allPlayers)
             {
                 if (player.isInGame)
                 {
-                    playersMap.Add(player.username, player);
-                    playersCards.Add(player.GetPlayerHand());
-                }
-            }
-            List<string> theWinners = PokerRules.DetermineWinner(playersCards, communityCards);
-            if(theWinners == null)
-            {
-                this.HandleWinner(null);
-                this.NotifyWinner("It's a tie!");
-                this.RestartGame();
-                return;
-            }
-            string allWinnerNames = "";
-            foreach(string winnerName in theWinners)
-            {
-                GameHandlerForSinglePlayer winner = playersMap[winnerName];
-                allWinnerNames += winnerName + ", ";
-
-                this.HandleWinner(winner);
-            }
-            allWinnerNames = allWinnerNames.Substring(0, allWinnerNames.Length - 2);
-            this.NotifyWinner(allWinnerNames);
-            this.RestartGame();
-
-        }
-
-        public void HandleWinner(GameHandlerForSinglePlayer winner)
-        {
-            int count = 0;
-            if (winner == null)
-            {
-                foreach (GameHandlerForSinglePlayer player in _allPlayers)
-                {
-                    if (player.isInGame)
+                    if (winner.Contains(player))
                     {
-                        count++;
+                        player.UpdateMoneyWhenGameEndsForWinner(moneyToADD);
+                    }
+                    else
+                    {
+                        player.UpdateMoneyWhenGameEndsForLosers();
                     }
                 }
-                foreach (GameHandlerForSinglePlayer player in _allPlayers)
-                {
-                    if (player.isInGame)
-                    {
-                        player.UpdateMoneyWhenGameEndsForWinner(this.moneyOnTheTable / count);
-                    }
-                }
-                return;
-            }
-            foreach (GameHandlerForSinglePlayer player in _allPlayers)
-            {
-                if (player.Equals(winner))
-                {
-                    player.UpdateMoneyWhenGameEndsForWinner(this.moneyOnTheTable);
-                }
-                else
-                {
-                    player.UpdateMoneyWhenGameEndsForLosers();
-                }
+                
             }
 
         }
 
-        private void NotifyWinner(string allWinnerNames)
+        /// <summary>
+        /// the function send to all clients the winners names
+        /// </summary>
+        /// <param name="allWinnerNames"></param>
+        private void NotifyWinner(string allWinnerNames, string oneWinnerName)
         {
             string allPlayersAndCards = "";
             foreach(GameHandlerForSinglePlayer gm in _allPlayers)
@@ -348,12 +400,17 @@ namespace PokerServer
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.username = allWinnerNames;
             clientServerProtocol.allPlayersAndCards = allPlayersAndCards;
+            clientServerProtocol.oneWinnerName = oneWinnerName;
             clientServerProtocol.command = Command.TELL_EVERYONE_WHO_WON;
             this.Brodcast(clientServerProtocol.generate());
         }
 
         
-
+        /// <summary>
+        /// the function check if there is only one player that hasn't fold at specific game and if there is she 
+        /// return his username
+        /// </summary>
+        /// <returns></returns>
         private GameHandlerForSinglePlayer checkIfSingleWinner()
         {
             int count = 0;
@@ -374,15 +431,37 @@ namespace PokerServer
             
         }
 
+        /// <summary>
+        /// the function handle restart the game when the game ending
+        /// </summary>
         private void RestartGame()
         {
+            List<GameHandlerForSinglePlayer> toRemove = new List<GameHandlerForSinglePlayer>();
             foreach(GameHandlerForSinglePlayer gm in _allPlayers)
             {
-                gm.betMoney = 0;
-                gm.lastStageTheUserPlayed = Stage.NONE;
-                gm.isInGame = true;
-                gm.highCard = null;
+                if(gm.playerMoney > 0)
+                {
+                    gm.betMoney = 0;
+                    gm.lastStageTheUserPlayed = Stage.NONE;
+                    gm.isInGame = true;
+                    gm.highCard = null;
+                }
+                else
+                {
+                    toRemove.Add(gm);
+                    try {
+                        gm.Disconnect();
+                    } catch (Exception e) { 
+                        Console.WriteLine(e.ToString());    
+                    }
+                }
+               
             }
+            foreach(GameHandlerForSinglePlayer player in toRemove)
+            {
+                _allPlayers.Remove(player);
+            }
+            this._deck.RestartGame();
             stage = Stage.BET_AGREE_ROUND_ONE;
             this.dealerIndex = (this.dealerIndex + 1)%_allPlayers.Count;
             this.smallBlindIndex = (this.dealerIndex + 1) % _allPlayers.Count;
@@ -392,6 +471,15 @@ namespace PokerServer
             this.communityCards.Clear();
         }
 
+        /// <summary>
+        /// the function handle the three command - RAISE, CHECK and FOLD and deal with them
+        /// </summary>
+        /// <param name="betMoney"></param>
+        /// <param name="username"></param>
+        /// <param name="isRaise"></param>
+        /// <param name="isCheck"></param>
+        /// <param name="isFold"></param>
+        /// <exception cref="Exception"></exception>
         public void handleRaise(int betMoney, string username, bool isRaise, bool isCheck, bool isFold)
         {
             this.minimumBet = betMoney*GameManager.MIN_BET_FACTOR;
@@ -423,6 +511,10 @@ namespace PokerServer
             this.nextTurn(false);
         }
 
+        /// <summary>
+        /// the function return the highest bet that some player bet on
+        /// </summary>
+        /// <returns></returns>
         public int highestBet()
         {
             int highestBet = _allPlayers.First().betMoney;
@@ -436,6 +528,11 @@ namespace PokerServer
             return highestBet;
         }
 
+        /// <summary>
+        /// the functon remove from the list that contain all the players that are in the game,
+        /// some player that forced/ dicide to leave the game
+        /// </summary>
+        /// <param name="gameHandlerForSinglePlayer"></param>
         public void Close(GameHandlerForSinglePlayer gameHandlerForSinglePlayer)
         {
             _allPlayers.Remove(gameHandlerForSinglePlayer);
@@ -447,6 +544,18 @@ namespace PokerServer
             {
                 player.SendMessage(text);
             }
+        }
+
+        public bool IsUserAlreadyLoggedIn(int userId)
+        {
+            foreach(GameHandlerForSinglePlayer gm in _allPlayers)
+            {
+                if(gm.userId == userId)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

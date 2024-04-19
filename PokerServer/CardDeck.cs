@@ -10,7 +10,7 @@ namespace PokerServer
     internal class CardDeck
     {
         private Card[] cards;
-        private static int index = 0;
+        private int index = 0;
         private Random random = new Random();
 
         public CardDeck()
@@ -126,17 +126,22 @@ namespace PokerServer
 
         public Card GetRandomCard()
         {
-            if(index== 52)
+            if(this.index== 52)
             {
-                return null;
+                throw new Exception("something went wrong, card deck is empty");
             }
-            int place =  this.random.Next(index,this.cards.Length);
+            int place =  this.random.Next(this.index,this.cards.Length);
             Card answer = this.cards[place];
-            Card ezer =  this.cards[index];
-            this.cards[index] = this.cards[place];
+            Card ezer =  this.cards[this.index];
+            this.cards[this.index] = this.cards[place];
             this.cards[place] = ezer;
-            index++;
+            this.index++;
             return answer;
+        }
+
+        public void RestartGame()
+        {
+            this.index = 0;
         }
     }
 }

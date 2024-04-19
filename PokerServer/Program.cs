@@ -27,12 +27,22 @@ namespace PokerServer
             // infinit loop.
             while (true)
             {
+
                 // AcceptTcpClient - Blocking call
                 // Execute will not continue until a connection is established
 
                 // We create an instance of ChatClient so the server will be able to 
                 // server multiple client at the same time.
-                PokerClientConnection user = new PokerClientConnection(listener.AcceptTcpClient());
+                try
+                {
+                    PokerClientConnection user = new PokerClientConnection(listener.AcceptTcpClient());
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+
+                    // ignoring the exception because its DOS
+                }
             }
 
 

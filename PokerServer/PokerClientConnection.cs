@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -29,6 +30,8 @@ namespace PokerServer
 
         public GameHandlerForSinglePlayer _handler;
 
+        public DateTime _lastConnect;
+        
         /// <summary>
         /// When the client gets connected to the server the server will create an instance of the Server and pass the TcpClient
         /// </summary>
@@ -36,10 +39,31 @@ namespace PokerServer
 
         public PokerClientConnection(TcpClient client)
         {
+            int count = 0;
             _client = client;
 
             // get the ip address of the client to register him with our client list
             _clientIP = client.Client.RemoteEndPoint.ToString();
+
+            foreach (DictionaryEntry c in AllClients)
+            {
+                string ipAndPort = (string)c.Key;
+                int index = ipAndPort.LastIndexOf(':');
+                string ip = ipAndPort.Substring(0, index);
+                IPAddress newIp = IPAddress.Parse(((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString());
+                if (ip.Equals(newIp.ToString()))
+                {
+                    DateTime time = ((PokerClientConnection)(c.Value))._lastConnect;
+                    if((DateTime.Now- time).TotalSeconds < 10)
+                    {
+                        count++;
+                    }
+                }
+            }
+            if(count >= 10)
+            {
+                throw new Exception("someone trying to connect too fast (DOS)");
+            }
 
             // Add the new client to our clients collection
             AllClients.Add(_clientIP, this);
@@ -48,6 +72,8 @@ namespace PokerServer
             data = new byte[_client.ReceiveBufferSize];
 
             _handler = new GameHandlerForSinglePlayer(this);
+
+            _lastConnect = DateTime.Now;
 
             // BeginRead will begin async read from the NetworkStream
             // This allows the server to remain responsive and continue accepting new connections from other clients
@@ -117,6 +143,8 @@ namespace PokerServer
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
+
                 AllClients.Remove(_clientIP);
                 this._handler.Close();
             }
@@ -128,6 +156,12 @@ namespace PokerServer
             {
                 ((PokerClientConnection)(c.Value)).SendMessage(message);
             }
+        }
+
+        public void Close()
+        {
+            AllClients.Remove(_clientIP);
+            _client.Close();
         }
 
     }

@@ -10,6 +10,8 @@ namespace PokerServer
     {
         REGISTRATION,
         LOGIN,
+        ERROR,
+        FORGOT_PASSWORD,
         OPEN_CARDS,
         RAISE,
         CHECK,
@@ -20,6 +22,7 @@ namespace PokerServer
         SEND_STARTING_CARDS_TO_PLAYER,
         UPDATE_BET_MONEY,
         YOUR_TURN,
+        NOTIFY_TURN,
         TELL_EVERYONE_WHO_WON,
     };
 
@@ -48,7 +51,8 @@ namespace PokerServer
 
         public int playerIndex { get; set; }
 
-        public int dealerIndex { get; set; }
+        public string dealerName { get; set; }
+
 
         public string smallBlindUsername { get; set; }
         public int playersNumber { get; set; }
@@ -59,9 +63,11 @@ namespace PokerServer
 
         public string raiseType { get; set; }
 
-        public string allPlayersAndCards {  get; set; }
+        public string allPlayersAndCards { get; set; }
 
+        public string message { get; set; }
 
+        public string oneWinnerName {  get; set; }
 
 
         /// <summary>
@@ -85,6 +91,9 @@ namespace PokerServer
 
             switch (cmd)
             {
+                case Command.ERROR:
+                    this.message = answer[1];
+                    break;
                 case Command.LOGIN:
                     this.username = answer[1];
                     this.password = answer[2];
@@ -98,6 +107,9 @@ namespace PokerServer
                     this.city = answer[6];
                     this.gender = answer[7];
                     break;
+                case Command.FORGOT_PASSWORD:
+                    this.username += answer[1];
+                    break;
                 case Command.SEND_STARTING_CARDS_TO_PLAYER:
                 case Command.OPEN_CARDS:
                     for (int i = 1; i < answer.Length - 1; i++)
@@ -110,22 +122,14 @@ namespace PokerServer
                     this.AllUsernames = answer[1];
                     break;
                 case Command.START_GAME:
-                    try
-                    {
-                        this.playerMoney = Convert.ToInt32(answer[1]);
-                        this.allTimeProfit = Convert.ToInt32(answer[2]);
-                        this.playerIndex = Convert.ToInt32(answer[3]);
-                        this.dealerIndex = Convert.ToInt32(answer[4]);
-                        this.smallBlindUsername = answer[5];
-                        this.bigBlindUsername = answer[6];
-                        this.playersNumber = Convert.ToInt32(answer[7]);
-                        this.allUserDetails = answer[8];
-
-                    }
-                    catch
-                    {
-
-                    }
+                    this.playerMoney = Convert.ToInt32(answer[1]);
+                    this.allTimeProfit = Convert.ToInt32(answer[2]);
+                    this.playerIndex = Convert.ToInt32(answer[3]);
+                    this.dealerName = answer[4];
+                    this.smallBlindUsername = answer[5];
+                    this.bigBlindUsername = answer[6];
+                    this.playersNumber = Convert.ToInt32(answer[7]);
+                    this.allUserDetails = answer[8];
                     break;
                 case Command.RAISE:
                     this.betMoney = Convert.ToInt32(answer[1]);
@@ -138,9 +142,13 @@ namespace PokerServer
                 case Command.SUCCES:
                     this.username = answer[1];
                     break;
+                case Command.NOTIFY_TURN:
+                    this.username = answer[1];
+                    break;
                 case Command.TELL_EVERYONE_WHO_WON:
                     this.username = answer[1];
                     this.allPlayersAndCards = answer[2];
+                    this.oneWinnerName = answer[3];
                     break;
                 case Command.YOUR_TURN:
                     this.minimumBet = Convert.ToInt32(answer[1]);
@@ -159,6 +167,9 @@ namespace PokerServer
             string answer = command.ToString() + "\n";
             switch (command)
             {
+                case Command.ERROR:
+                    answer += message + "\n";
+                    break;
                 case Command.LOGIN:
                     answer += username + "\n";
                     answer += password + "\n";
@@ -171,6 +182,9 @@ namespace PokerServer
                     answer += email + "\n";
                     answer += city + "\n";
                     answer += gender + "\n";
+                    break;
+                case Command.FORGOT_PASSWORD:
+                    answer += username + "\n";
                     break;
                 case Command.SEND_STARTING_CARDS_TO_PLAYER:
                 case Command.OPEN_CARDS:
@@ -186,7 +200,7 @@ namespace PokerServer
                     answer += this.playerMoney.ToString() + "\n";
                     answer += this.allTimeProfit.ToString() + "\n";
                     answer += this.playerIndex.ToString() + "\n";
-                    answer += this.dealerIndex.ToString() + "\n";
+                    answer += this.dealerName + "\n";
                     answer += this.smallBlindUsername + "\n";
                     answer += this.bigBlindUsername + "\n";
                     answer += this.playersNumber.ToString() + "\n";
@@ -205,9 +219,13 @@ namespace PokerServer
                 case Command.SUCCES:
                     answer += this.username + "\n";
                     break;
+                case Command.NOTIFY_TURN:
+                    answer += this.username + "\n";
+                    break;
                 case Command.TELL_EVERYONE_WHO_WON:
                     answer += this.username + "\n";
                     answer += this.allPlayersAndCards + "\n";
+                    answer += this.oneWinnerName + "\n";
                     break;
                 case Command.YOUR_TURN:
                     answer += this.minimumBet.ToString() + "\n";

@@ -11,14 +11,11 @@ namespace PokerServer
     {
         private string connectionString;
         private SqlConnection connection;
-        private SqlCommand command;
 
         public SqlConnect()
         {
-
             connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=D:\Visual Studio\PokerServer\PokerServer\Database1.mdf;Integrated Security = True";
             connection = new SqlConnection(connectionString);
-            command = new SqlCommand();
         }
 
         /// <summary>
@@ -35,8 +32,10 @@ namespace PokerServer
         /// <returns></returns>
         public int InsertNewUser(string username, string password, string firstName, string lastName, string email, string city, string gender, int allTimeProfit)
         {
+            SqlCommand command = new SqlCommand();
             command.CommandText = "INSERT INTO Users VALUES('" + username + "','" + password + "','" + firstName + "','" + lastName + "','" + email + "','" + city + "','" + gender + "','" + allTimeProfit + "')";
             connection.Open();
+            command.Connection = connection;
             var x = command.ExecuteNonQuery();
             connection.Close();
             return x;
@@ -49,7 +48,9 @@ namespace PokerServer
         /// <returns></returns>
         public bool IsExist(string username)
         {
-            command.CommandText = "SELECT COUNT(*) FROM Users WHERE Username ='" + username + "'";
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "SELECT COUNT(*) FROM Users WHERE Username = @username";
+            command.Parameters.AddWithValue("@username", username);
             connection.Open();
             command.Connection = connection;
             int b = Convert.ToInt32(command.ExecuteScalar());
@@ -57,30 +58,17 @@ namespace PokerServer
             return b > 0;
         }
 
-        /// <summary>
-        /// the function check if the username and the password exist in the same row in the data base
-        /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        public bool ValidateLogin(string username, string password)
-        {
-            command.CommandText = "SELECT COUNT(*) FROM Users WHERE Username ='" + username + "' AND Password ='" + password + "'";
-            connection.Open();
-            command.Connection = connection;
-            int b = Convert.ToInt32(command.ExecuteScalar());
-            connection.Close();
-            return b > 0;
-        }
 
         /// <summary>
-        /// the function return the first name of this username
+        /// the function return the email of this username
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        public string GetFirstName(string username)
+        public string GetEmail(string username)
         {
-            command.CommandText = "SELECT FirstName FROM Users WHERE Username ='" + username + "'";
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "SELECT Email FROM Users WHERE Username  = @username";
+            command.Parameters.AddWithValue("@username", username);
             connection.Open();
             command.Connection = connection;
             string b = (string)command.ExecuteScalar();
@@ -96,7 +84,10 @@ namespace PokerServer
         /// <returns></returns>
         public int GetUserId(string username, string password)
         {
-            command.CommandText = "SELECT Id FROM Users WHERE Username ='" + username + "' AND Password ='" + password + "'";
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "SELECT Id FROM Users WHERE Username = @username AND Password = @password ";
+            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.AddWithValue("@password", password);
             connection.Open();
             command.Connection = connection;
             int b = Convert.ToInt32(command.ExecuteScalar());
@@ -111,7 +102,9 @@ namespace PokerServer
         /// <returns></returns>
         public string GetUsernameFromId(int id)
         {
-            command.CommandText = "SELECT Username FROM Users WHERE Id =" + id;
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "SELECT Username FROM Users WHERE Id = @id ";
+            command.Parameters.AddWithValue("@id", id);
             connection.Open();
             command.Connection = connection;
             string b = (string)command.ExecuteScalar();
@@ -126,7 +119,9 @@ namespace PokerServer
         /// <returns></returns>
         public int GetAllTimeProfit(int id)
         {
-            command.CommandText = "SELECT AllTimeProfit FROM Users WHERE Id =" + id;
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "SELECT AllTimeProfit FROM Users WHERE Id = @id ";
+            command.Parameters.AddWithValue("@id", id);
             connection.Open();
             command.Connection = connection;
             int b = Convert.ToInt32(command.ExecuteScalar());
@@ -141,8 +136,12 @@ namespace PokerServer
         /// <param name="profitFromThisGame"></param>
         public void UpdateAllTimeProfitForWinner(int id, int profitFromThisGame)
         {
-            command.CommandText = "UPDATE Users SET AllTimeProfit = AllTimeProfit +" + profitFromThisGame + " WHERE Id =" + id;
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "UPDATE Users SET AllTimeProfit = AllTimeProfit + @profitFromThisGame WHERE Id = @id ";
+            command.Parameters.AddWithValue("@id", id);
+            command.Parameters.AddWithValue("@profitFromThisGame", profitFromThisGame);
             connection.Open();
+            command.Connection = connection;
             command.ExecuteNonQuery();
             connection.Close();
         }
@@ -154,16 +153,31 @@ namespace PokerServer
         /// <param name="profitFromThisGame"></param>
         public void UpdateAllTimeProfitForLosers(int id, int profitFromThisGame)
         {
-            command.CommandText = "UPDATE Users SET AllTimeProfit = AllTimeProfit -" + profitFromThisGame + " WHERE Id =" + id;
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "UPDATE Users SET AllTimeProfit = AllTimeProfit - @profitFromThisGame WHERE Id = @id ";
+            command.Parameters.AddWithValue("@id", id);
+            command.Parameters.AddWithValue("@profitFromThisGame", profitFromThisGame);
             connection.Open();
+            command.Connection = connection;
             command.ExecuteNonQuery();
             connection.Close();
         }
 
-
-
-
-
-
+        /// <summary>
+        /// the function update the Password when someone forgot his password
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="newPassword"></param>
+        public void UpdatePassword(string username, string newPassword)
+        {
+            SqlCommand command = new SqlCommand();
+            command.CommandText = "UPDATE Users SET Password = @newPassword WHERE Username = @username ";
+            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.AddWithValue("@newPassword", newPassword);
+            connection.Open();
+            command.Connection = connection;
+            command.ExecuteNonQuery();
+            connection.Close();
+        }
     }
 }
