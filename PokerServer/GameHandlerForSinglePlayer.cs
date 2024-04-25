@@ -27,6 +27,10 @@ namespace PokerServer
         private GameManager gameManager;
         private Card[] cards;
 
+        /// <summary>
+        /// the constructor create a new SqlConnection and stores the pokerClientConnection
+        /// </summary>
+        /// <param name="pokerClientConnection"></param>
         public GameHandlerForSinglePlayer(PokerClientConnection pokerClientConnection)
         {
             sqlConnect = new SqlConnect();
@@ -295,7 +299,7 @@ namespace PokerServer
         }
 
         /// <summary>
-        /// 
+        /// the function calls the SendMessage mathod in the client connection class
         /// </summary>
         /// <param name="message"></param>
         public void SendMessage(string message)
@@ -317,7 +321,7 @@ namespace PokerServer
         }
 
         /// <summary>
-        /// 
+        /// the function close and clean up this instance
         /// </summary>
         public void Close()
         {
@@ -367,6 +371,9 @@ namespace PokerServer
 
         }
 
+        /// <summary>
+        /// the function disconect the TCP connection
+        /// </summary>
         public void Disconnect()
         {
             pokerClientConnection.Close();

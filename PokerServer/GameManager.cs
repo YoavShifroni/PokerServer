@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace PokerServer
 {
+    /// <summary>
+    /// enum that represent the Stage of the poker game
+    /// </summary>
     public enum Stage
     {
         NONE,
@@ -37,7 +40,6 @@ namespace PokerServer
         private int minimumBet;
         public bool isActiveGame = false;
         private Random rnd = new Random();
-
         public const int MIN_BET_FACTOR = 2;
 
         public static GameManager GetInstance(GameHandlerForSinglePlayer gameHandlerForSinglePlayer)
@@ -53,6 +55,9 @@ namespace PokerServer
             return instance;
         }
 
+        /// <summary>
+        /// the construcor create new CardDeck and give value to the private "stage" that this is the first round
+        /// </summary>
         private GameManager()
         {
             this._deck = new CardDeck();
@@ -466,6 +471,10 @@ namespace PokerServer
 
         }
 
+        /// <summary>
+        /// the function is called when the game is fullt ended (there is only one player left) and will restart
+        /// all the nececrly thing that need in this class
+        /// </summary>
         private void RestartGameManager()
         {
             _allPlayers.Clear();
@@ -545,6 +554,10 @@ namespace PokerServer
             _allPlayers.Remove(gameHandlerForSinglePlayer);
         }
 
+        /// <summary>
+        /// the function send the string that she recived to all of the clients that are in the game 
+        /// </summary>
+        /// <param name="text"></param>
         private void Brodcast(string text)
         {
             foreach (GameHandlerForSinglePlayer player in _allPlayers)
@@ -552,7 +565,11 @@ namespace PokerServer
                 player.SendMessage(text);
             }
         }
-
+        /// <summary>
+        /// the function check if the user is already in the game, if he is it will return true otherwise false
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public bool IsUserAlreadyLoggedIn(int userId)
         {
             foreach(GameHandlerForSinglePlayer gm in _allPlayers)

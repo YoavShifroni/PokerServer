@@ -46,6 +46,13 @@ namespace PokerServer
     public class PokerRules
     {
 
+        /// <summary>
+        /// the function return List that contain the names of the winners in this around acording to the
+        /// Poker rules
+        /// </summary>
+        /// <param name="playersCards"></param>
+        /// <param name="communityCards"></param>
+        /// <returns></returns>
         public static List<string> DetermineWinner(List<PlayerHand> playersCards, List<Card> communityCards)
         {
 
@@ -69,6 +76,7 @@ namespace PokerServer
                 }
             }
 
+            // count how many players have the highest hand ranking
             List<PlayerHand> allMaxPowerPlayers = new List<PlayerHand>();
             int countHand = 0;
             foreach (PlayerHand playerHand in playersCards)
@@ -79,12 +87,14 @@ namespace PokerServer
                     allMaxPowerPlayers.Add(playerHand);
                 }
             }
+            // if there is only one player with the highest hand ranking he is the winner
             if(countHand == 1)
             {
                 List<string> winner = new List<string>();
                 winner.Add(maxPower.username);
                 return winner;
             }
+            // if the highest hand ranking is "TwoPair" or "FullHouse" deal with it in specific way
             if (maxPower.handRanking.Equals(HandRanking.FullHouse) || 
                 maxPower.handRanking.Equals(HandRanking.TwoPair))
             {
@@ -92,6 +102,7 @@ namespace PokerServer
                 Card ezer1 = new Card("2S");
                 maxHighCard1.highCard = ezer1;
                 maxHighCard1.secondHighCard = ezer1;
+                // find the highest high card
                 foreach (PlayerHand playerHand in allMaxPowerPlayers)
                 {
                     if (CardComparer.GetCardValue(playerHand.highCard) > CardComparer.GetCardValue(maxHighCard1.highCard))
@@ -99,6 +110,7 @@ namespace PokerServer
                         maxHighCard1 = playerHand;
                     }
                 }
+                // add to the list all the players that have this high card
                 List<PlayerHand> allSameHighCardPlayer= new List<PlayerHand>();
                 foreach(PlayerHand playerHand in allMaxPowerPlayers)
                 {
@@ -107,12 +119,14 @@ namespace PokerServer
                         allSameHighCardPlayer.Add(playerHand);
                     }
                 }
+                // if there is only one player with the highest high card he is the winner
                 if(allSameHighCardPlayer.Count == 1)
                 {
                     List<string> winner = new List<string>();
                     winner.Add(maxHighCard1.username);
                     return winner;
                 }
+                // from the players that have the highest high card find the highest second high card
                 foreach(PlayerHand playerHand in allSameHighCardPlayer)
                 {
                     if (CardComparer.GetCardValue(playerHand.secondHighCard) > CardComparer.GetCardValue(maxHighCard1.secondHighCard))
@@ -120,6 +134,8 @@ namespace PokerServer
                         maxHighCard1 = playerHand;
                     }
                 }
+                // from the players that have the highest high card count how many of theme have also
+                // the highest second high card
                 int countSecondHighCard = 0;
                 foreach (PlayerHand playerHand in allSameHighCardPlayer)
                 {
@@ -128,18 +144,21 @@ namespace PokerServer
                         countSecondHighCard++;
                     }
                 }
+                // if there is only one player with the highest second high card he is the winner
                 if(countSecondHighCard == 1)
                 {
                     List<string> winner = new List<string>();
                     winner.Add(maxHighCard1.username);
                     return winner;
                 }
+                // if you get to here that mean that some players have the highest hand ranking with the same cards in it
                 return CompareHighCards(allSameHighCardPlayer, communityCards);
 
             }
             PlayerHand maxHighCard = new PlayerHand(null,null);
             Card ezer = new Card("2S");
             maxHighCard.highCard = ezer;
+            // find the highest high card
             foreach (PlayerHand playerHand in allMaxPowerPlayers)
             {
                 if(CardComparer.GetCardValue(playerHand.highCard) > CardComparer.GetCardValue(maxHighCard.highCard))
@@ -147,7 +166,7 @@ namespace PokerServer
                     maxHighCard = playerHand;
                 }
             }
-
+            // count how many players have the highest high card
             int countHighCard = 0;
             foreach (PlayerHand playerHand in allMaxPowerPlayers)
             {
@@ -156,7 +175,7 @@ namespace PokerServer
                     countHighCard++;
                 }
             }
-
+            // if there is only one player with the highest high card he is the winner
             if (countHighCard == 1)
             {
                 List<string> winner = new List<string>();
@@ -168,6 +187,12 @@ namespace PokerServer
             return CompareHighCards(allMaxPowerPlayers, communityCards);
         }
 
+        /// <summary>
+        /// the function return the hand ranking of the player with the cards that in it
+        /// </summary>
+        /// <param name="playerCards"></param>
+        /// <param name="communityCards"></param>
+        /// <returns></returns>
         private static (HandRanking, Card, Card) EvaluateHand(List<Card> playerCards, List<Card> communityCards)
         {
             List<Card> allCards = playerCards.Concat(communityCards).ToList();
@@ -182,50 +207,65 @@ namespace PokerServer
             (Card highCard8, bool isOnePair) = IsOnePair(allCards);
 
 
-
+            // if the player has hand ranking of "Royal Flush"
             if (IsRoyalFlush(allCards))
             {
                 Card highCard = new Card("AD");
                 return(HandRanking.RoyalFlush, highCard, null);
             }
+            // if the player has hand ranking of "Straight Flush"
             if (isStraightFlush)
             {
                 return (HandRanking.StraightFlush, highCard1,null);
             }
+            // if the player has hand ranking of "Four Of A Kind"
             if (isFourOfAKind)
             {
                 return (HandRanking.FourOfAKind, highCard2, null);
             }
+            // if the player has hand ranking of "Full House"
             if (isFullHouse)
             {
                 return (HandRanking.FullHouse, highCard3, secondHighCard);
             }
+            // if the player has hand ranking of "Flush"
             if (isFlush)
             {
                 return (HandRanking.Flush, highCard4, null);
             }
+            // if the player has hand ranking of "Straight"
             if (isStraight)
             {
                 return (HandRanking.Straight, highCard5, null);
             }
+            // if the player has hand ranking of "Three Of A Kind"
             if (isThreeOfAKind)
             {
                 return (HandRanking.ThreeOfAKind, highCard6, null);
             }
+            // if the player has hand ranking of "Two Pair"
             if (isTwoPair)
             {
                 return (HandRanking.TwoPair, highCard7, secondHighCard2);
             }
+            // if the player has hand ranking of "Pair"
             if (isOnePair)
             {
                 return (HandRanking.OnePair, highCard8, null);
             }
+            // if you get here that mean that the player has the lowest hand ranking of "High Card" 
             allCards = allCards.OrderBy(c => CardComparer.GetCardValue(c)).ToList();
             return (HandRanking.HighCard, allCards.Last(), null);
         }
 
         
-
+        /// <summary>
+        /// the function compare the high cards of the players that it recive and return List
+        /// the contain the name of the winners
+        /// </summary>
+        /// <param name="playerHands"></param>
+        /// <param name="communityCards"></param>
+        /// <returns></returns>
         private static List<string> CompareHighCards(List<PlayerHand> playerHands, List<Card> communityCards)
         {
             List<string> result = new List<string>();
@@ -266,6 +306,13 @@ namespace PokerServer
 
         // Hand evaluation methods
 
+
+        /// <summary>
+        /// the function check if the player has the hand rnking of "Royal Flush" if he has it will
+        /// return true otherwise false
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <returns></returns>
         public static bool IsRoyalFlush(List<Card> cards)
         {
             // check for a royal flush
@@ -336,7 +383,13 @@ namespace PokerServer
 
         }
 
-
+        /// <summary>
+        /// the function check if the player has hand ranking of "Straight Flush" if he has it will return
+        /// true and the highest card in the straight flush otherwise it will return false
+        /// and the lowest card by value in the game (2)
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <returns></returns>
         public static (Card, bool) IsStraightFlush(List<Card> cards)
         {
             // Check for a straight flush
@@ -393,6 +446,12 @@ namespace PokerServer
             return (highCard, isStraightFlush);
         }
 
+        /// <summary>
+        /// the function check if the player has hand ranking of "Four Of A Kind" if he has it will return
+        /// true and the card that apper four times otherwise it will return false and null
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <returns></returns>
         public static (Card, bool) IsFourOfAKind(List<Card> cards)
         {
             // Check for four of a kind
@@ -401,8 +460,8 @@ namespace PokerServer
             bool isFourOfAKind = groups.Any(g => g.Count() == 4);
             if(isFourOfAKind)
             {
-                for (int i = 0; i < cards.Count; i++)
-                {
+                for (int i = 0; i < cards.Count; i++) { 
+               
                     int count = 0;
                     highCard = cards.ElementAt(i);
                     for (int j = 0; j < cards.Count; j++)
@@ -416,6 +475,7 @@ namespace PokerServer
                     {
                         break;
                     }
+
                 }
 
             }
@@ -423,7 +483,13 @@ namespace PokerServer
 
         }
 
-
+        /// <summary>
+        /// the function check if the player has hand ranking of "Full House" if he has it will return
+        /// true, the card that appering three times and the card that apper two times otherwise
+        /// it will return false, null and null
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <returns></returns>
         public static (Card, Card, bool) IsFullHouse(List<Card> cards)
         {
             // Check for a full house
@@ -579,6 +645,13 @@ namespace PokerServer
             return (highCard, secondHighcard, isFullHouse);
         }
 
+
+        /// <summary>
+        /// the function check if the player has hand ranking of "Flush" if he has it will return
+        /// true and the highest card in the flush otherwise it will return false and null
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <returns></returns>
         public static (Card, bool) IsFlush(List<Card> cards)
         {
             // Check for a flush
@@ -609,6 +682,12 @@ namespace PokerServer
             return (highCard, isFlush);
         }
 
+        /// <summary>
+        /// the function check if the player has hand ranking of "Straight" if he has it will return
+        /// true and the highest card in the straight otherwise it will return false and null
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <returns></returns>
         public static (Card, bool) IsStraight(List<Card> cards)
         {
             // Check for a straight 
@@ -647,6 +726,12 @@ namespace PokerServer
 
         }
 
+        /// <summary>a
+        /// the function check if the player has hand ranking of "Three Of A Kind" if he has it will return
+        /// true and the card that appering three times otherwise it will return false and null
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <returns></returns>
         public static (Card, bool) IsThreeOfAKind(List<Card> cards)
         {
             // Check for three of a kind
@@ -677,6 +762,12 @@ namespace PokerServer
         }
 
 
+        /// <summary>
+        /// the function check if the player has hand ranking of "Two Pair" if he has it will return
+        /// true and the card that appering twice otherwise it will return false and null
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <returns></returns>
         public static (Card, Card, bool) IsTwoPair(List<Card> cards)
         {
             // Check for two pair
@@ -736,6 +827,13 @@ namespace PokerServer
             return (highCard1, highCard2, isTwoPair);
         }
 
+
+        /// <summary>
+        /// the function check if the player has hand ranking of "One Pair" if he has it will return
+        /// true and the card that appering twice otherwise it will return false and null
+        /// </summary>
+        /// <param name="cards"></param>
+        /// <returns></returns>
         public static (Card, bool) IsOnePair(List<Card> cards)
         {
             // Check for one pair
