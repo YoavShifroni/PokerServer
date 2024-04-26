@@ -37,6 +37,7 @@ namespace PokerServer
         /// </summary>
         /// <param name="client"></param>
 
+
         public PokerClientConnection(TcpClient client)
         {
             int count = 0;
@@ -150,6 +151,10 @@ namespace PokerServer
             }
         }
 
+        /// <summary>
+        /// send message to all the players that are connected
+        /// </summary>
+        /// <param name="message"></param>
         public void Broadcast(string message)
         {
             foreach (DictionaryEntry c in AllClients)

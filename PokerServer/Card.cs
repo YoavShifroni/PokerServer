@@ -12,12 +12,19 @@ namespace PokerServer
 
         
 
-
+        /// <summary>
+        /// the constructor store the string name of card in the varuble nameOfCard
+        /// </summary>
+        /// <param name="nameOfCard"></param>
         public Card(string nameOfCard)
         {
             this.nameOfCard = nameOfCard;
         }
         
+        /// <summary>
+        /// toString function
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return nameOfCard;

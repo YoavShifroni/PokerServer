@@ -27,22 +27,7 @@ namespace PokerServer
         RoyalFlush,
     };
 
-    public class PlayerHand
-    {
-        public List<Card> cards;
-        public string username = "";
-        public HandRanking handRanking;
-        public Card highCard;
-        public Card secondHighCard;
-        public PlayerHand(List<Card> cards, string username)
-        {
-            this.cards = cards;
-            this.username = username;
-            handRanking = HandRanking.None;
-        }
-
-
-    }
+    
     public class PokerRules
     {
 
@@ -647,8 +632,8 @@ namespace PokerServer
 
 
         /// <summary>
-        /// the function check if the player has hand ranking of "Flush" if he has it will return
-        /// true and the highest card in the flush otherwise it will return false and null
+        /// the function check if the player has hand ranking of "Flush" if he has it will return true and the highest card in the flush
+        /// otherwise it will return false and null
         /// </summary>
         /// <param name="cards"></param>
         /// <returns></returns>
@@ -683,8 +668,8 @@ namespace PokerServer
         }
 
         /// <summary>
-        /// the function check if the player has hand ranking of "Straight" if he has it will return
-        /// true and the highest card in the straight otherwise it will return false and null
+        /// the function check if the player has hand ranking of "Straight" if he has it will return true and the highest card 
+        /// in the straight otherwise it will return false and null
         /// </summary>
         /// <param name="cards"></param>
         /// <returns></returns>
@@ -727,8 +712,8 @@ namespace PokerServer
         }
 
         /// <summary>a
-        /// the function check if the player has hand ranking of "Three Of A Kind" if he has it will return
-        /// true and the card that appering three times otherwise it will return false and null
+        /// the function check if the player has hand ranking of "Three Of A Kind" if he has it will return true and the card that appering
+        /// three times otherwise it will return false and null
         /// </summary>
         /// <param name="cards"></param>
         /// <returns></returns>
@@ -763,8 +748,8 @@ namespace PokerServer
 
 
         /// <summary>
-        /// the function check if the player has hand ranking of "Two Pair" if he has it will return
-        /// true and the card that appering twice otherwise it will return false and null
+        /// the function check if the player has hand ranking of "Two Pair" if he has it will return true and the two cards that appering
+        /// twice otherwise it will return false, null and null
         /// </summary>
         /// <param name="cards"></param>
         /// <returns></returns>
@@ -829,8 +814,8 @@ namespace PokerServer
 
 
         /// <summary>
-        /// the function check if the player has hand ranking of "One Pair" if he has it will return
-        /// true and the card that appering twice otherwise it will return false and null
+        /// the function check if the player has hand ranking of "One Pair" if he has it will return true and the card that appering\
+        /// twice otherwise it will return false and null
         /// </summary>
         /// <param name="cards"></param>
         /// <returns></returns>

@@ -555,7 +555,7 @@ namespace PokerServer
         }
 
         /// <summary>
-        /// the function send the string that she recived to all of the clients that are in the game 
+        /// the function send the string that it recived to all of the players that are in the game 
         /// </summary>
         /// <param name="text"></param>
         private void Brodcast(string text)

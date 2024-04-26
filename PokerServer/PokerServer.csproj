@@ -64,6 +64,7 @@
     <Compile Include="CardDeck.cs" />
     <Compile Include="GameHandlerForSinglePlayer.cs" />
     <Compile Include="GameManager.cs" />
+    <Compile Include="PlayerHand.cs" />
     <Compile Include="PokerRules.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

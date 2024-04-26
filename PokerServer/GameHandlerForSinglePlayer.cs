@@ -55,7 +55,10 @@ namespace PokerServer
                     this.handleRegistration(c1.username, c1.password, c1.firstName, c1.lastName, c1.email, c1.city, c1.gender);
                     return;
                 case Command.FORGOT_PASSWORD:
-                    this.ForgotPassword(c1.username);
+                    this.ForgotPassword(c1.username, c1.code);
+                    break;
+                case Command.UPDATE_PASSWORD:
+                    this.UpdatePassword(c1.username, c1.newPassword);
                     break;
                 case Command.START_GAME:
                     this.gameManager.StartGame();
@@ -235,37 +238,27 @@ namespace PokerServer
         /// the function handle the command FORGOT_PASSWORD when someone forget his password
         /// </summary>
         /// <param name="username"></param>
-        public void ForgotPassword(string username)
+        public void ForgotPassword(string username, string code)
         {
             if(!sqlConnect.IsExist(username)) {
                 return;
             }
-            string newPassword = this.randomPassword();
-            string hashedPassword = GameHandlerForSinglePlayer.CreateMD5(newPassword);
-            sqlConnect.UpdatePassword(username, hashedPassword);
+            
             string email = sqlConnect.GetEmail(username);
-            this.sendMail(email, newPassword);
+            this.sendMail(email, code);
         }
 
         /// <summary>
-        /// the function return random password that contain at least one capital letter
-        /// , one small letter, one digit and one specific sign
+        /// the function handle the command UPDATE_PASSWORD when someone enter their new password after
+        /// they change it
         /// </summary>
-        /// <returns></returns>
-        public string randomPassword()
+        /// <param name="username"></param>
+        /// <param name="newPassword"></param>
+        public void UpdatePassword(string username, string newPassword)
         {
-            var charsALL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz#?!@$%^&*-";
-            Random rnd = new Random();
-            var randomIns = new Random();
-            int N = rnd.Next(5, 10);
-            var rndChars = Enumerable.Range(0, N)
-                            .Select(_ => charsALL[randomIns.Next(charsALL.Length)])
-                            .ToArray();
-            rndChars[N-1] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[randomIns.Next(24)];
-            rndChars[N-2] = "abcdefghijklmnopqrstuvwxyz"[randomIns.Next(24)];
-            rndChars[N-3] = "0123456789"[randomIns.Next(10)];
-            rndChars[N-4] = "#?!@$%^&*-"[randomIns.Next(10)];
-            return new string(rndChars);
+            string hashedPassword = GameHandlerForSinglePlayer.CreateMD5(newPassword);
+            sqlConnect.UpdatePassword(username, hashedPassword);
+            this.handleLogin(username, newPassword);
         }
 
         /// <summary>

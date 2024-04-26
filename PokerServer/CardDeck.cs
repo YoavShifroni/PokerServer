@@ -13,6 +13,9 @@ namespace PokerServer
         private int index = 0;
         private Random random = new Random();
 
+        /// <summary>
+        /// the constructor create a new card deck with all the cards that are in poker
+        /// </summary>
         public CardDeck()
         {
             this.cards = new Card[52];
@@ -124,6 +127,11 @@ namespace PokerServer
 
         }
 
+        /// <summary>
+        /// the function return random card from the card deck
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public Card GetRandomCard()
         {
             if(this.index== 52)
@@ -139,6 +147,9 @@ namespace PokerServer
             return answer;
         }
 
+        /// <summary>
+        /// this funciton is called when the game ended and change the value of the varuble "index" to be 0
+        /// </summary>
         public void RestartGame()
         {
             this.index = 0;
