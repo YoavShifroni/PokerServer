@@ -9,8 +9,11 @@ namespace PokerServerTests
     [TestClass]
     public class UnitTest1
     {
-
+        /// <summary>
+        /// this test check if the function IsOnePair working
+        /// </summary>
         [TestMethod]
+      
         public void TestIsOnePair()
         {
             List<Card> cards = new List<Card>();
@@ -27,8 +30,11 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function IsTwoPair working
+        /// </summary>
         [TestMethod]
-        public void TestIsTwoPair2()
+        public void TestIsTwoPair()
         {
             List<Card> cards = new List<Card>();
             cards.Add(new Card("AH"));
@@ -45,6 +51,10 @@ namespace PokerServerTests
 
         }
 
+
+        /// <summary>
+        /// this test check if the function IsThreeOfAKind working
+        /// </summary>
         [TestMethod]
         public void TestIsThreeOfAKind()
         {
@@ -62,6 +72,9 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function IsStright working in case of A = 14
+        /// </summary>
         [TestMethod]
         public void TestIsStraightUp()
         {
@@ -79,6 +92,10 @@ namespace PokerServerTests
 
         }
 
+
+        /// <summary>
+        /// this test check if the function IsStraight working in case of A = 1
+        /// </summary>
         [TestMethod]
         public void TestIsStraightDown()
         {
@@ -97,6 +114,9 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function IsFlush working
+        /// </summary>
         [TestMethod]
         public void TestIsFlush()
         {
@@ -112,9 +132,11 @@ namespace PokerServerTests
             Assert.IsFalse(result);
         }
 
-
+        /// <summary>
+        /// this test check if the function IsFullHouse working
+        /// </summary>
         [TestMethod]
-        public void TestIsFullHouse2()
+        public void TestIsFullHouse()
         {
             List<Card> cards = new List<Card>();
             cards.Add(new Card("AH"));
@@ -131,6 +153,9 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function IsFourOfAKind working
+        /// </summary>
         [TestMethod]
         public void TestIsFourOfAKind()
         {
@@ -148,6 +173,10 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function IsStraightFlush working in case of duplicate card that apper
+        /// in the stright and when A = 1
+        /// </summary>
         [TestMethod]
         public void TestIsStraightFlushWithDuplicate()
         {
@@ -165,6 +194,10 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function IsStraightFlush working in case of duplicate card that apper
+        /// in the stright 
+        /// </summary>
         [TestMethod]
         public void TestIsStraightFlushWithDuplicate2()
         {
@@ -182,6 +215,9 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function IsRoyalFlush working 
+        /// </summary>
         [TestMethod]
         public void TestIsRoyalFlush()
         {
@@ -198,6 +234,9 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function IsRoyalFlush working in case of duplicate card that apper in the straight
+        /// </summary>
         [TestMethod]
         public void TestIsRoyalFlushWithDuplicate()
         {
@@ -214,7 +253,10 @@ namespace PokerServerTests
 
         }
 
-
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of OnePair
+        /// </summary>
         [TestMethod]
         public void TestDetermineWinnerOnePair()
         {
@@ -241,6 +283,10 @@ namespace PokerServerTests
             CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
         }
 
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of TwoPair
+        /// </summary>
         [TestMethod]
         public void TestDetermineWinnerTwoPair()
         {
@@ -268,6 +314,10 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of TwoPair but when there is already a TwoPair in the community cards
+        /// </summary>
         [TestMethod]
         public void TestDetermineWinnerTwoPair2()
         {
@@ -294,6 +344,7 @@ namespace PokerServerTests
             CollectionAssert.AreEqual(winners, nameOfWinner, StructuralComparisons.StructuralComparer);
 
         }
+
 
         [TestMethod]
         public void TestDetermineWinnerThreeOfAKind()
