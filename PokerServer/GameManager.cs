@@ -33,20 +33,61 @@ namespace PokerServer
     /// </summary>
     internal class GameManager
     {
-
+        /// <summary>
+        /// card deck that contain all the 52 cards that are in poker
+        /// </summary>
         private CardDeck _deck;
+        /// <summary>
+        /// the instance of this class per singleton design pattern
+        /// </summary>
         private static GameManager instance = null;
+        /// <summary>
+        /// linked list that contain all the importent details about the players that are in the game
+        /// </summary>
         private static LinkedList<GameHandlerForSinglePlayer> _allPlayers = new LinkedList<GameHandlerForSinglePlayer>();
+        /// <summary>
+        /// list of cards that contain the community cards (the cards that open on the board)
+        /// </summary>
         private List<Card> communityCards = new List<Card>();
+        /// <summary>
+        /// index of active player
+        /// </summary>
         private int _activePlayerIndex = 0;
+        /// <summary>
+        /// index of the player that is the small blind
+        /// </summary>
         private int smallBlindIndex;
-        private int dealerIndex = -1;
+        /// <summary>
+        /// index of the player that is the big blind
+        /// </summary>
         private int bigBlindIndex;
+        /// <summary>
+        /// index of the player that is the dealer 
+        /// </summary>
+        private int dealerIndex = -1;
+        /// <summary>
+        /// the amount of money that on the table right now
+        /// </summary>
         private int moneyOnTheTable = 0;
+        /// <summary>
+        /// the stage of the game
+        /// </summary>
         public Stage stage ;
+        /// <summary>
+        /// the minimum bet that player can bet on right now
+        /// </summary>
         private int minimumBet;
+        /// <summary>
+        /// the bool check if there is active game right now
+        /// </summary>
         public bool isActiveGame = false;
+        /// <summary>
+        /// declaration of a new random
+        /// </summary>
         private Random rnd = new Random();
+        /// <summary>
+        /// constant number of the number that the minimum bet is equals to him multiply by the highest bet
+        /// </summary>
         public const int MIN_BET_FACTOR = 2;
 
         /// <summary>
@@ -453,7 +494,6 @@ namespace PokerServer
                     gm.betMoney = 0;
                     gm.lastStageTheUserPlayed = Stage.NONE;
                     gm.isInGame = true;
-                    gm.highCard = null;
                 }
                 else
                 {

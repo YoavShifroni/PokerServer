@@ -12,8 +12,17 @@ namespace PokerServer
     /// </summary>
     internal class CardDeck
     {
+        /// <summary>
+        /// array of card that represent card deck
+        /// </summary>
         private Card[] cards;
+        /// <summary>
+        /// index of random card
+        /// </summary>
         private int index = 0;
+        /// <summary>
+        /// declaration of a new random
+        /// </summary>
         private Random random = new Random();
 
         /// <summary>

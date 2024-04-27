@@ -11,10 +11,25 @@ namespace PokerServer
     /// </summary>
     public class PlayerHand
     {
+        /// <summary>
+        /// list of Cards that contain the player cards
+        /// </summary>
         public List<Card> cards;
+        /// <summary>
+        /// username of the player
+        /// </summary>
         public string username = "";
+        /// <summary>
+        /// hand ranking of the player
+        /// </summary>
         public HandRanking handRanking;
+        /// <summary>
+        /// high card
+        /// </summary>
         public Card highCard;
+        /// <summary>
+        /// second high card
+        /// </summary>
         public Card secondHighCard;
 
         /// <summary>

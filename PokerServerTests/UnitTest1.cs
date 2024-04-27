@@ -26,7 +26,7 @@ namespace PokerServerTests
             cards.Add(new Card("4H"));
             (Card highCard, bool result) = PokerRules.IsOnePair(cards);
             Assert.IsTrue(result);
-            Assert.AreEqual(CardComparer.GetCardValue(highCard), CardComparer.GetCardValue(cards[0]));
+            Assert.AreEqual(Card.GetCardValue(highCard), Card.GetCardValue(cards[0]));
 
         }
 
@@ -46,8 +46,8 @@ namespace PokerServerTests
             cards.Add(new Card("4H"));
             (Card highCard1, Card highCard2, bool result) = PokerRules.IsTwoPair(cards);
             Assert.IsTrue(result);
-            Assert.AreEqual(CardComparer.GetCardValue(highCard1), CardComparer.GetCardValue(cards[0]));
-            Assert.AreEqual(CardComparer.GetCardValue(highCard2), CardComparer.GetCardValue(cards[4]));
+            Assert.AreEqual(Card.GetCardValue(highCard1), Card.GetCardValue(cards[0]));
+            Assert.AreEqual(Card.GetCardValue(highCard2), Card.GetCardValue(cards[4]));
 
         }
 
@@ -68,7 +68,7 @@ namespace PokerServerTests
             cards.Add(new Card("4H"));
             (Card highCard, bool result) = PokerRules.IsThreeOfAKind(cards);
             Assert.IsTrue(result);
-            Assert.AreEqual(CardComparer.GetCardValue(highCard), CardComparer.GetCardValue(cards[0]));
+            Assert.AreEqual(Card.GetCardValue(highCard), Card.GetCardValue(cards[0]));
 
         }
 
@@ -88,7 +88,7 @@ namespace PokerServerTests
             cards.Add(new Card("10H"));
             (Card highCard, bool result) = PokerRules.IsStraight(cards);
             Assert.IsTrue(result);
-            Assert.AreEqual(CardComparer.GetCardValue(highCard), CardComparer.GetCardValue(cards[0]));
+            Assert.AreEqual(Card.GetCardValue(highCard), Card.GetCardValue(cards[0]));
 
         }
 
@@ -109,7 +109,7 @@ namespace PokerServerTests
             cards.Add(new Card("5S"));
             (Card highCard, bool result) = PokerRules.IsStraight(cards);
             Assert.IsTrue(result);
-            Assert.AreEqual(CardComparer.GetCardValue(highCard), CardComparer.GetCardValue(cards[6]));
+            Assert.AreEqual(Card.GetCardValue(highCard), Card.GetCardValue(cards[6]));
 
 
         }
@@ -148,8 +148,8 @@ namespace PokerServerTests
             cards.Add(new Card("6C"));
             (Card highCard, Card secondHighCard, bool result) = PokerRules.IsFullHouse(cards);
             Assert.IsTrue(result);
-            Assert.AreEqual(CardComparer.GetCardValue(highCard), CardComparer.GetCardValue(cards[0]));
-            Assert.AreEqual(CardComparer.GetCardValue(secondHighCard), CardComparer.GetCardValue(cards[5]));
+            Assert.AreEqual(Card.GetCardValue(highCard), Card.GetCardValue(cards[0]));
+            Assert.AreEqual(Card.GetCardValue(secondHighCard), Card.GetCardValue(cards[5]));
 
         }
 
@@ -169,7 +169,7 @@ namespace PokerServerTests
             cards.Add(new Card("4C"));
             (Card highCard, bool result) = PokerRules.IsFourOfAKind(cards);
             Assert.IsTrue(result);
-            Assert.AreEqual(CardComparer.GetCardValue(highCard), CardComparer.GetCardValue(cards[1]));
+            Assert.AreEqual(Card.GetCardValue(highCard), Card.GetCardValue(cards[1]));
 
         }
 
@@ -190,7 +190,7 @@ namespace PokerServerTests
             cards.Add(new Card("2H"));
             (Card highCard, bool result) = PokerRules.IsStraightFlush(cards);
             Assert.IsTrue(result);
-            Assert.AreEqual(CardComparer.GetCardValue(highCard), CardComparer.GetCardValue(cards[4]));
+            Assert.AreEqual(Card.GetCardValue(highCard), Card.GetCardValue(cards[4]));
 
         }
 
@@ -211,7 +211,7 @@ namespace PokerServerTests
             cards.Add(new Card("2C"));
             (Card highCard, bool result) = PokerRules.IsStraightFlush(cards);
             Assert.IsTrue(result);
-            Assert.AreEqual(CardComparer.GetCardValue(highCard), CardComparer.GetCardValue(cards[5]));
+            Assert.AreEqual(Card.GetCardValue(highCard), Card.GetCardValue(cards[5]));
 
         }
 
@@ -499,7 +499,8 @@ namespace PokerServerTests
             PlayerHand player1 = new PlayerHand(cardsForPlayer1, "yoav");
             PlayerHand player2 = new PlayerHand(cardsForPlayer2, "roy");
             List<string> nameOfWinner = new List<string>();
-            nameOfWinner = null;
+            nameOfWinner.Add("yoav");
+            nameOfWinner.Add("roy");
             List<PlayerHand> playersCards = new List<PlayerHand>();
             playersCards.Add(player1);
             playersCards.Add(player2);

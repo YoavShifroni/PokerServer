@@ -10,26 +10,42 @@ using System.Threading.Tasks;
 
 namespace PokerServer
 {
+    /// <summary>
+    /// The Server class represents info about each client connecting to the server.
+    /// </summary>
     public class PokerClientConnection
     {
-        /// <summary>
-        /// The Server class represents info about each client connecting to the server.
-        /// </summary>
 
-        // Store list of all clients connecting to the server
-        // the list is static so all memebers of the chat will be able to obtain list
+        /// <summary>
+        /// // Store list of all clients connecting to the server
+        // the list is static so all memebers of the game will be able to obtain list
         // of current connected client
+        /// </summary>
         public static Hashtable AllClients = new Hashtable();
 
-        // information about the client
+        /// <summary>
+        /// actual TCP connection between the server and the client
+        /// </summary>
         private TcpClient _client;
+
+        /// <summary>
+        /// the ip of the client
+        /// </summary>
         private string _clientIP;
 
-        // used for sending and reciving data
+        /// <summary>
+        /// the memory we allocate to recive things from the server and sending things to the server
+        /// </summary>
         private byte[] data;
 
+        /// <summary>
+        /// GameHandleForSinglePlayer object
+        /// </summary>
         public GameHandlerForSinglePlayer _handler;
 
+        /// <summary>
+        /// the time of the last player that connected
+        /// </summary>
         public DateTime _lastConnect;
 
         /// <summary>
@@ -93,6 +109,7 @@ namespace PokerServer
         /// <param name="message">Message to send</param>
         public void SendMessage(string message)
         {
+            Console.WriteLine(message);
             try
             {
                 System.Net.Sockets.NetworkStream ns;

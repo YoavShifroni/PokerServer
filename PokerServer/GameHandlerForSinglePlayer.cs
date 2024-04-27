@@ -14,20 +14,48 @@ namespace PokerServer
     /// This class holds the data for a single player in the poker game
     /// It stores handles the commands being received from the client and sends commands back to it
     /// </summary>
-    public class GameHandlerForSinglePlayer
+    public class GameHandlerForSinglePlayer 
     {
-
+        /// <summary>
+        /// the bool check if the player is still in the game
+        /// </summary>
         public bool isInGame;
-        public Card highCard = null;
-        public int userId;
-        public int playerMoney;
-        public string username = "";
-        public int betMoney = 0;
 
+        /// <summary>
+        /// the user id of the player
+        /// </summary>
+        public int userId;
+        /// <summary>
+        /// how much money does the player has
+        /// </summary>
+        public int playerMoney;
+        /// <summary>
+        /// the username of the player
+        /// </summary>
+        public string username = "";
+        /// <summary>
+        /// the money the player bet on
+        /// </summary>
+        public int betMoney = 0;
+        /// <summary>
+        /// the last stage that the player played in
+        /// </summary>
         public Stage lastStageTheUserPlayed = Stage.NONE;
+        /// <summary>
+        /// the connection to the data base
+        /// </summary>
         private SqlConnect sqlConnect;
+        /// <summary>
+        /// the connection to the client
+        /// </summary>
         private PokerClientConnection pokerClientConnection;
+        /// <summary>
+        /// GameManager object
+        /// </summary>
         private GameManager gameManager;
+        /// <summary>
+        /// array that contain the player starting cards
+        /// </summary>
         private Card[] cards;
 
         /// <summary>
@@ -103,7 +131,7 @@ namespace PokerServer
         {
             int highestBet = this.gameManager.highestBet();
             int delta = highestBet - this.betMoney;
-            if(this.playerMoney - delta < 0)
+            if (this.playerMoney - delta < 0)
             {
                 delta = this.playerMoney;
             }
@@ -114,7 +142,7 @@ namespace PokerServer
         }
 
         /// <summary>
-        /// the function deal with the amount of money that the user just bet
+        /// the function handle the RAISE command when someone press the bet button in the client
         /// </summary>
         /// <param name="betMoney">Amount of money</param>
         private void handleBetMoney(int betMoney)
@@ -185,7 +213,8 @@ namespace PokerServer
         /// <param name="email"></param>
         /// <param name="city"></param>
         /// <param name="gender"></param>
-        private void handleRegistration(string username, string password, string firstName, string lastName, string email, string city, string gender)
+        private void handleRegistration(string username, string password, string firstName, string lastName
+            , string email, string city, string gender)
         {
             if (GameManager.GetInstance(null).isActiveGame)
             {
@@ -206,7 +235,7 @@ namespace PokerServer
             this.gameManager = GameManager.GetInstance(this);
             this.username = username;
             this.playerMoney = 1000;
-            string hashedPassword =  GameHandlerForSinglePlayer.CreateMD5(password);
+            string hashedPassword = GameHandlerForSinglePlayer.CreateMD5(password);
             this.userId = sqlConnect.InsertNewUser(username, hashedPassword, firstName, lastName, email
                 , city, gender, 0);
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
@@ -242,10 +271,11 @@ namespace PokerServer
         /// <param name="username">Username</param>
         public void ForgotPassword(string username, string code)
         {
-            if(!sqlConnect.IsExist(username)) {
+            if (!sqlConnect.IsExist(username))
+            {
                 return;
             }
-            
+
             string email = sqlConnect.GetEmail(username);
             this.sendMail(email, code);
         }
@@ -280,18 +310,10 @@ namespace PokerServer
                 Credentials = new System.Net.NetworkCredential("yudassin@gmail.com", "livv ckoy dtyo sqjp\r\n")
             };
             MailMessage msg = new System.Net.Mail.MailMessage("yudassin@gmail.com", email
-                , "New Password For Poker Game" , "Your new password is: " + password);
+                , "New Password For Poker Game", "Your code is: " + password);
             smtpClient.Send(msg);
         }
 
-        /// <summary>
-        /// the function return the username of this player
-        /// </summary>
-        /// <returns>The username</returns>
-        public string getUsername()
-        {
-            return sqlConnect.GetUsernameFromId(this.userId);
-        }
 
         /// <summary>
         /// the function calls the SendMessage mathod in the client connection class
@@ -320,7 +342,7 @@ namespace PokerServer
         /// </summary>
         public void Close()
         {
-            if(this.gameManager != null)
+            if (this.gameManager != null)
             {
                 this.gameManager.Close(this);
             }
@@ -375,5 +397,5 @@ namespace PokerServer
         }
     }
 
-        
+
 }

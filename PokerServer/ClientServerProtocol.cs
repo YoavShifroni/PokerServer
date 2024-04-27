@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace PokerServer
 {
     /// <summary>
-     /// Enumeration of the different commands we're using in the client<->server protocol
+    /// Enumeration of the different commands we're using in the client<->server protocol
     /// </summary>
     public enum Command
     {
@@ -30,7 +30,6 @@ namespace PokerServer
         TELL_EVERYONE_WHO_WON,
         FINAL_WINNER,
     };
-
     /// <summary>
     /// This class represents the protocol between the server and the client
     /// it has the Command field and according to its value - we're sending and receiving
@@ -38,49 +37,128 @@ namespace PokerServer
     /// </summary>
     public class ClientServerProtocol
     {
+        /// <summary>
+        /// username of player
+        /// </summary>
         public string username { get; set; }
+        /// <summary>
+        /// password of player
+        /// </summary>
         public string password { get; set; }
+        /// <summary>
+        /// first name of player
+        /// </summary>
         public string firstName { get; set; }
+        /// <summary>
+        /// last name of player
+        /// </summary>
         public string lastName { get; set; }
+        /// <summary>
+        /// email of player
+        /// </summary>
         public string email { get; set; }
+        /// <summary>
+        /// city of player
+        /// </summary>
         public string city { get; set; }
+        /// <summary>
+        /// gender of player
+        /// </summary>
         public string gender { get; set; }
 
+        /// <summary>
+        /// how much money does the player has
+        /// </summary>
         public int playerMoney { get; set; }
 
+        /// <summary>
+        /// how much money does the player bet on
+        /// </summary>
         public int betMoney { get; set; }
+
+        /// <summary>
+        /// the command 
+        /// </summary>
         public Command command { get; set; }
 
+        /// <summary>
+        /// the cards that will sent to the table
+        /// </summary>
         public string[] cards = new string[5];
 
+        /// <summary>
+        /// string that contain all the usernames of connected players
+        /// </summary>
         public string AllUsernames { get; set; }
 
+        /// <summary>
+        /// the minimum bet that a player can bet on 
+        /// </summary>
         public int minimumBet { get; set; }
 
+        /// <summary>
+        /// the all time profit of specific player
+        /// </summary>
         public int allTimeProfit { get; set; }
 
+        /// <summary>
+        /// the player index
+        /// </summary>
         public int playerIndex { get; set; }
 
+        /// <summary>
+        /// the dealer username
+        /// </summary>
         public string dealerName { get; set; }
 
-
+        /// <summary>
+        /// the small blind username
+        /// </summary>
         public string smallBlindUsername { get; set; }
+
+        /// <summary>
+        /// the amount of players that are connected to the game
+        /// </summary>
         public int playersNumber { get; set; }
 
+        /// <summary>
+        /// the big blind username
+        /// </summary>
         public string bigBlindUsername { get; set; }
 
+        /// <summary>
+        /// string that contain all user details
+        /// </summary>
         public string allUserDetails { get; set; }
 
+        /// <summary>
+        /// the raise type (Raise/ Check/ Fold)
+        /// </summary>
         public string raiseType { get; set; }
 
+        /// <summary>
+        /// all players usernames and their cards
+        /// </summary>
         public string allPlayersAndCards { get; set; }
 
+        /// <summary>
+        /// the error message that will sent to the client
+        /// </summary>
         public string message { get; set; }
 
+        /// <summary>
+        /// the username of one of the winners
+        /// </summary>
         public string oneWinnerName { get; set; }
 
+        /// <summary>
+        /// the code that will sent to a player that forgot his password to the mail
+        /// </summary>
         public string code { get; set; }
 
+        /// <summary>
+        /// the new password that the client choose for himself
+        /// </summary>
         public string newPassword { get; set; }
 
         /// <summary>
@@ -259,8 +337,6 @@ namespace PokerServer
             answer += "\r\n";
             return answer;
         }
-
-
         /// <summary>
         /// the function set a card in specific place
         /// </summary>
@@ -272,13 +348,8 @@ namespace PokerServer
         }
 
 
-
-
-
-
-
-
-
-
     }
 }
+
+
+

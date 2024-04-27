@@ -90,7 +90,7 @@ namespace PokerServer
                 // find the highest high card
                 foreach (PlayerHand playerHand in allMaxPowerPlayers)
                 {
-                    if (CardComparer.GetCardValue(playerHand.highCard) > CardComparer.GetCardValue(maxHighCard1.highCard))
+                    if (Card.GetCardValue(playerHand.highCard) > Card.GetCardValue(maxHighCard1.highCard))
                     {
                         maxHighCard1 = playerHand;
                     }
@@ -99,7 +99,7 @@ namespace PokerServer
                 List<PlayerHand> allSameHighCardPlayer= new List<PlayerHand>();
                 foreach(PlayerHand playerHand in allMaxPowerPlayers)
                 {
-                    if(CardComparer.GetCardValue(maxHighCard1.highCard) == CardComparer.GetCardValue(playerHand.highCard))
+                    if(Card.GetCardValue(maxHighCard1.highCard) == Card.GetCardValue(playerHand.highCard))
                     {
                         allSameHighCardPlayer.Add(playerHand);
                     }
@@ -114,7 +114,7 @@ namespace PokerServer
                 // from the players that have the highest high card find the highest second high card
                 foreach(PlayerHand playerHand in allSameHighCardPlayer)
                 {
-                    if (CardComparer.GetCardValue(playerHand.secondHighCard) > CardComparer.GetCardValue(maxHighCard1.secondHighCard))
+                    if (Card.GetCardValue(playerHand.secondHighCard) > Card.GetCardValue(maxHighCard1.secondHighCard))
                     {
                         maxHighCard1 = playerHand;
                     }
@@ -124,7 +124,7 @@ namespace PokerServer
                 int countSecondHighCard = 0;
                 foreach (PlayerHand playerHand in allSameHighCardPlayer)
                 {
-                    if (CardComparer.GetCardValue(maxHighCard1.secondHighCard) == CardComparer.GetCardValue(playerHand.secondHighCard))
+                    if (Card.GetCardValue(maxHighCard1.secondHighCard) == Card.GetCardValue(playerHand.secondHighCard))
                     {
                         countSecondHighCard++;
                     }
@@ -146,7 +146,7 @@ namespace PokerServer
             // find the highest high card
             foreach (PlayerHand playerHand in allMaxPowerPlayers)
             {
-                if(CardComparer.GetCardValue(playerHand.highCard) > CardComparer.GetCardValue(maxHighCard.highCard))
+                if(Card.GetCardValue(playerHand.highCard) > Card.GetCardValue(maxHighCard.highCard))
                 {
                     maxHighCard = playerHand;
                 }
@@ -155,7 +155,7 @@ namespace PokerServer
             int countHighCard = 0;
             foreach (PlayerHand playerHand in allMaxPowerPlayers)
             {
-                if (CardComparer.GetCardValue(maxHighCard.highCard) == CardComparer.GetCardValue(playerHand.highCard))
+                if (Card.GetCardValue(maxHighCard.highCard) == Card.GetCardValue(playerHand.highCard))
                 {
                     countHighCard++;
                 }
@@ -239,7 +239,7 @@ namespace PokerServer
                 return (HandRanking.OnePair, highCard8, null);
             }
             // if you get here that mean that the player has the lowest hand ranking of "High Card" 
-            allCards = allCards.OrderBy(c => CardComparer.GetCardValue(c)).ToList();
+            allCards = allCards.OrderBy(c => Card.GetCardValue(c)).ToList();
             return (HandRanking.HighCard, allCards.Last(), null);
         }
 
@@ -254,12 +254,12 @@ namespace PokerServer
         private static List<string> CompareHighCards(List<PlayerHand> playerHands, List<Card> communityCards)
         {
             List<string> result = new List<string>();
-            List<int> communityCardsValue = communityCards.ConvertAll(c => CardComparer.GetCardValue(c)).ToList();
+            List<int> communityCardsValue = communityCards.ConvertAll(c => Card.GetCardValue(c)).ToList();
             List<int> allCards = new List<int>();
             allCards.AddRange(communityCardsValue);
             foreach(PlayerHand playerHand in playerHands)
             {
-                List<int> playerHandCards = playerHand.cards.ConvertAll(c => CardComparer.GetCardValue(c)).ToList();
+                List<int> playerHandCards = playerHand.cards.ConvertAll(c => Card.GetCardValue(c)).ToList();
                 allCards.AddRange(playerHandCards);
             }
             allCards.Sort();
@@ -276,7 +276,7 @@ namespace PokerServer
             }
             foreach(PlayerHand hand in playerHands)
             {
-                List<int> playerCardValue = hand.cards.ConvertAll(c => CardComparer.GetCardValue(c)).ToList();
+                List<int> playerCardValue = hand.cards.ConvertAll(c => Card.GetCardValue(c)).ToList();
                 if (playerCardValue.Contains(highCard))
                 {
                     result.Add(hand.username);
@@ -301,9 +301,8 @@ namespace PokerServer
         public static bool IsRoyalFlush(List<Card> cards)
         {
             // check for a royal flush
-            bool isFlushOnRoyalCards = false;
             bool isRoyalStraight = false;
-            cards = cards.Where(c => CardComparer.GetCardValue(c) >= 10).OrderBy(c => CardComparer.GetCardValue(c)).ToList();
+            cards = cards.Where(c => Card.GetCardValue(c) >= 10).OrderBy(c => Card.GetCardValue(c)).ToList();
             List<Card> groupeCards = cards.GroupBy(c => c.nameOfCard[0]).Select(g => g.First()).ToList();
 
 
@@ -313,11 +312,11 @@ namespace PokerServer
                 return false;
             }
 
-            if (CardComparer.GetCardValue(groupeCards.ElementAt(groupeCards.Count - 1)) == 14 &&
-                CardComparer.GetCardValue(groupeCards.ElementAt(groupeCards.Count - 2)) == 13 &&
-                CardComparer.GetCardValue(groupeCards.ElementAt(groupeCards.Count - 3)) == 12 &&
-                CardComparer.GetCardValue(groupeCards.ElementAt(groupeCards.Count - 4)) == 11 &&
-                CardComparer.GetCardValue(groupeCards.ElementAt(groupeCards.Count - 5)) == 10)
+            if (Card.GetCardValue(groupeCards.ElementAt(groupeCards.Count - 1)) == 14 &&
+                Card.GetCardValue(groupeCards.ElementAt(groupeCards.Count - 2)) == 13 &&
+                Card.GetCardValue(groupeCards.ElementAt(groupeCards.Count - 3)) == 12 &&
+                Card.GetCardValue(groupeCards.ElementAt(groupeCards.Count - 4)) == 11 &&
+                Card.GetCardValue(groupeCards.ElementAt(groupeCards.Count - 5)) == 10)
             {
                 isRoyalStraight = true;
             }
@@ -330,7 +329,7 @@ namespace PokerServer
             Dictionary<int, string> cardAppearance = new Dictionary<int, string>();
             foreach (Card card in cards)
             {
-                int cardValue = CardComparer.GetCardValue(card);
+                int cardValue = Card.GetCardValue(card);
 
                 if (cardAppearance.ContainsKey(cardValue))
                 {
@@ -338,7 +337,7 @@ namespace PokerServer
                 }
                 else
                 {
-                    cardAppearance[cardValue] = CardComparer.GetCardType(card);
+                    cardAppearance[cardValue] = Card.GetCardType(card);
                 }
             }
 
@@ -357,7 +356,7 @@ namespace PokerServer
                 return false;
             }
 
-            List<Card> cardsWithSameType = cards.Where(card => CardComparer.GetCardType(card).Equals(cardType)).ToList();
+            List<Card> cardsWithSameType = cards.Where(card => Card.GetCardType(card).Equals(cardType)).ToList();
 
             if (cardsWithSameType.Count == 5)
             {
@@ -403,7 +402,7 @@ namespace PokerServer
                 }
                 foreach(Card card in cards)
                 {
-                    if (CardComparer.GetCardType(card).Equals(cardType))
+                    if (Card.GetCardType(card).Equals(cardType))
                     {
                         count++;
                     }
@@ -421,12 +420,12 @@ namespace PokerServer
             List<Card> cardsWithSameType = new List<Card>();
             foreach(Card card in cards)
             {
-                if (CardComparer.GetCardType(card).Equals(cardType))
+                if (Card.GetCardType(card).Equals(cardType))
                 {
                     cardsWithSameType.Add(card);
                 }
             }
-            cardsWithSameType = cardsWithSameType.OrderBy(c => CardComparer.GetCardValue2(c)).ToList();
+            cardsWithSameType = cardsWithSameType.OrderBy(c => Card.GetCardValue2(c)).ToList();
             (highCard, isStraightFlush) = PokerRules.IsStraight(cardsWithSameType);
             return (highCard, isStraightFlush);
         }
@@ -451,7 +450,7 @@ namespace PokerServer
                     highCard = cards.ElementAt(i);
                     for (int j = 0; j < cards.Count; j++)
                     {
-                        if (CardComparer.GetCardValue(highCard) == CardComparer.GetCardValue(cards[j]))
+                        if (Card.GetCardValue(highCard) == Card.GetCardValue(cards[j]))
                         {
                             count++;
                         }
@@ -491,7 +490,7 @@ namespace PokerServer
                 highCard1 = cards.ElementAt(i);
                 for (int j = 0; j < cards.Count; j++)
                 {
-                    if (CardComparer.GetCardValue(highCard1) == CardComparer.GetCardValue(cards[j]))
+                    if (Card.GetCardValue(highCard1) == Card.GetCardValue(cards[j]))
                     {
                         count++;
                     }
@@ -510,14 +509,14 @@ namespace PokerServer
                     highCard2 = cards.ElementAt(i);
                     for (int j = 0; j < cards.Count; j++)
                     {
-                        if (CardComparer.GetCardValue(highCard2) == CardComparer.GetCardValue(cards[j]))
+                        if (Card.GetCardValue(highCard2) == Card.GetCardValue(cards[j]))
                         {
                             count++;
                         }
                     }
                     if (count >= 2)
                     {
-                        if (CardComparer.GetCardValue(highCard1) != CardComparer.GetCardValue(highCard2))
+                        if (Card.GetCardValue(highCard1) != Card.GetCardValue(highCard2))
                         {
                             isFullHouse = true;
                             break;
@@ -534,7 +533,7 @@ namespace PokerServer
                     highCard1 = cards.ElementAt(i);
                     for(int j = 0; j<cards.Count; j++)
                     {
-                        if(CardComparer.GetCardValue(highCard1) == CardComparer.GetCardValue(cards[j]))
+                        if(Card.GetCardValue(highCard1) == Card.GetCardValue(cards[j]))
                         {
                             count++;
                         }
@@ -551,12 +550,12 @@ namespace PokerServer
                     highCard2 = cards.ElementAt(i);
                     for(int j = 0;j<cards.Count; j++)
                     {
-                        if(CardComparer.GetCardValue(highCard2) == CardComparer.GetCardValue(cards[j]))
+                        if(Card.GetCardValue(highCard2) == Card.GetCardValue(cards[j]))
                         {
                             count++;
                         }
                     }
-                    if(count==3 && CardComparer.GetCardValue(highCard1) != CardComparer.GetCardValue(highCard2))
+                    if(count==3 && Card.GetCardValue(highCard1) != Card.GetCardValue(highCard2))
                     {
                         break;
                     }
@@ -564,7 +563,7 @@ namespace PokerServer
                 }
                 if(highCard1 != null && highCard2 != null)
                 {
-                    if(CardComparer.GetCardValue(highCard1) > CardComparer.GetCardValue(highCard2))
+                    if(Card.GetCardValue(highCard1) > Card.GetCardValue(highCard2))
                     {
                         highCard = highCard1;
                         secondHighcard = highCard2;
@@ -582,14 +581,14 @@ namespace PokerServer
                     highCard2 = cards.ElementAt(i);
                     for (int j = 0; j < cards.Count; j++)
                     {
-                        if (CardComparer.GetCardValue(highCard2) == CardComparer.GetCardValue(cards[j]))
+                        if (Card.GetCardValue(highCard2) == Card.GetCardValue(cards[j]))
                         {
                             count++;
                         }
                     }
                     if (count < 3 && count >= 2)
                     {
-                        if (CardComparer.GetCardValue(highCard2) != CardComparer.GetCardValue(highCard1))
+                        if (Card.GetCardValue(highCard2) != Card.GetCardValue(highCard1))
                         {
                             break;
                         }
@@ -601,15 +600,15 @@ namespace PokerServer
                     highCard3 = cards.ElementAt(i);
                     for (int j = 0; j < cards.Count; j++)
                     {
-                        if (CardComparer.GetCardValue(highCard3) == CardComparer.GetCardValue(cards[j]))
+                        if (Card.GetCardValue(highCard3) == Card.GetCardValue(cards[j]))
                         {
                             count++;
                         }
                     }
                     if (count < 3 && count >= 2)
                     {
-                        if (CardComparer.GetCardValue(highCard3) != CardComparer.GetCardValue(highCard1)
-                            && CardComparer.GetCardValue(highCard3) != CardComparer.GetCardValue(highCard2))
+                        if (Card.GetCardValue(highCard3) != Card.GetCardValue(highCard1)
+                            && Card.GetCardValue(highCard3) != Card.GetCardValue(highCard2))
                         {
                             break;
                         }
@@ -617,7 +616,7 @@ namespace PokerServer
                     highCard3 = new Card("2S");
                 }
                 highCard = highCard1;
-                if(CardComparer.GetCardValue(highCard2) > CardComparer.GetCardValue(highCard3))
+                if(Card.GetCardValue(highCard2) > Card.GetCardValue(highCard3))
                 {
                     secondHighcard = highCard2;
                 }
@@ -645,14 +644,14 @@ namespace PokerServer
             Card highCard = null;
             if (isFlush)
             {
-                cards = cards.OrderBy(c => CardComparer.GetCardValue(c)).ToList();
+                cards = cards.OrderBy(c => Card.GetCardValue(c)).ToList();
                 for (int i = cards.Count-1; i >=0; i--)
                 {
                     int count = 0;
                     highCard = cards.ElementAt(i);
                     for (int j = 0; j < cards.Count; j++)
                     {
-                        if (CardComparer.GetCardType(highCard).Equals(CardComparer.GetCardType(cards[j])))
+                        if (Card.GetCardType(highCard).Equals(Card.GetCardType(cards[j])))
                         {
                             count++;
                         }
@@ -678,29 +677,29 @@ namespace PokerServer
             // Check for a straight 
 
             bool isStraight = false;
-            cards = cards.OrderBy(c => CardComparer.GetCardValue(c)).ToList();
+            cards = cards.OrderBy(c => Card.GetCardValue(c)).ToList();
             cards = cards.GroupBy(c => c.nameOfCard[0]).Select(g => g.First()).ToList();
             Card highCard = null;
             for (int i = 0; i < cards.Count - 4; i++)
             {
-                if (CardComparer.GetCardValue(cards[i]) == CardComparer.GetCardValue(cards[i + 1]) - 1
-                    && CardComparer.GetCardValue(cards[i + 1]) == CardComparer.GetCardValue(cards[i + 2]) - 1
-                    && CardComparer.GetCardValue(cards[i + 2]) == CardComparer.GetCardValue(cards[i + 3]) - 1
-                    && CardComparer.GetCardValue(cards[i + 3]) == CardComparer.GetCardValue(cards[i + 4]) - 1)
+                if (Card.GetCardValue(cards[i]) == Card.GetCardValue(cards[i + 1]) - 1
+                    && Card.GetCardValue(cards[i + 1]) == Card.GetCardValue(cards[i + 2]) - 1
+                    && Card.GetCardValue(cards[i + 2]) == Card.GetCardValue(cards[i + 3]) - 1
+                    && Card.GetCardValue(cards[i + 3]) == Card.GetCardValue(cards[i + 4]) - 1)
                 {
                     highCard = cards[i+4];
                     isStraight = true;
                     return(highCard,isStraight);
                 }
             }
-            cards = cards.OrderBy(c => CardComparer.GetCardValue2(c)).ToList();
+            cards = cards.OrderBy(c => Card.GetCardValue2(c)).ToList();
             cards = cards.GroupBy(c => c.nameOfCard[0]).Select(g => g.First()).ToList();
             for (int i = 0; i < cards.Count - 4; i++)
             {
-                if (CardComparer.GetCardValue2(cards[i]) == CardComparer.GetCardValue2(cards[i + 1]) - 1
-                    && CardComparer.GetCardValue2(cards[i + 1]) == CardComparer.GetCardValue2(cards[i + 2]) - 1
-                    && CardComparer.GetCardValue2(cards[i + 2]) == CardComparer.GetCardValue2(cards[i + 3]) - 1
-                    && CardComparer.GetCardValue2(cards[i + 3]) == CardComparer.GetCardValue2(cards[i + 4]) - 1)
+                if (Card.GetCardValue2(cards[i]) == Card.GetCardValue2(cards[i + 1]) - 1
+                    && Card.GetCardValue2(cards[i + 1]) == Card.GetCardValue2(cards[i + 2]) - 1
+                    && Card.GetCardValue2(cards[i + 2]) == Card.GetCardValue2(cards[i + 3]) - 1
+                    && Card.GetCardValue2(cards[i + 3]) == Card.GetCardValue2(cards[i + 4]) - 1)
                 {
                     highCard = cards[i+4];
                     isStraight = true;
@@ -731,7 +730,7 @@ namespace PokerServer
                     highCard = cards.ElementAt(i);
                     for (int j = 0; j < cards.Count; j++)
                     {
-                        if (CardComparer.GetCardValue(highCard) == CardComparer.GetCardValue(cards[j]))
+                        if (Card.GetCardValue(highCard) == Card.GetCardValue(cards[j]))
                         {
                             count++;
                         }
@@ -765,7 +764,7 @@ namespace PokerServer
             {
                 bool isFirstHighCard = true;
                 bool isSecondHighCard = false;
-                cards = cards.OrderBy(c => CardComparer.GetCardValue(c)).ToList();
+                cards = cards.OrderBy(c => Card.GetCardValue(c)).ToList();
                 for (int i = cards.Count - 1; i >= 0; i--)
                 {
                     if (isFirstHighCard)
@@ -774,7 +773,7 @@ namespace PokerServer
                         highCard1 = cards.ElementAt(i);
                         for (int j = 0; j < cards.Count; j++)
                         {
-                            if (CardComparer.GetCardValue(highCard1) == CardComparer.GetCardValue(cards[j]))
+                            if (Card.GetCardValue(highCard1) == Card.GetCardValue(cards[j]))
                             {
                                 count++;
                             }
@@ -791,14 +790,14 @@ namespace PokerServer
                         highCard2 = cards.ElementAt(i);
                         for (int j = 0; j < cards.Count; j++)
                         {
-                            if (CardComparer.GetCardValue(highCard2) == CardComparer.GetCardValue(cards[j]))
+                            if (Card.GetCardValue(highCard2) == Card.GetCardValue(cards[j]))
                             {
                                 count++;
                             }
                         }
                         if (count == 2)
                         {
-                            if(CardComparer.GetCardValue(highCard2) != CardComparer.GetCardValue(highCard1))
+                            if(Card.GetCardValue(highCard2) != Card.GetCardValue(highCard1))
                             {
                                 break;
                             }
@@ -833,7 +832,7 @@ namespace PokerServer
                     highCard = cards.ElementAt(i);
                     for (int j = 0; j < cards.Count; j++)
                     {
-                        if (CardComparer.GetCardValue(highCard) == CardComparer.GetCardValue(cards[j]))
+                        if (Card.GetCardValue(highCard) == Card.GetCardValue(cards[j]))
                         {
                             count++;
                         }

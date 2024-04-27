@@ -14,12 +14,19 @@ namespace PokerServer
     /// </summary>
     class SqlConnect
     {
+        /// <summary>
+        /// The SQL Connection object - actual connection with the SQL database
+        /// </summary>
         private SqlConnection connection;
 
+        /// <summary>
+        /// The constructor - creating the SQL connection with the database
+        /// </summary>
         public SqlConnect()
         {
 
-            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database1.mdf") + ";Integrated Security = True";
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" 
+            + Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database1.mdf") + ";Integrated Security = True";
             connection = new SqlConnection(connectionString);
         }
 
@@ -35,7 +42,8 @@ namespace PokerServer
         /// <param name="gender"></param>
         /// <param name="allTimeProfit"></param>
         /// <returns></returns>
-        public int InsertNewUser(string username, string password, string firstName, string lastName, string email, string city, string gender, int allTimeProfit)
+        public int InsertNewUser(string username, string password, string firstName, string lastName, string email,
+            string city, string gender, int allTimeProfit)
         {
             SqlCommand command = new SqlCommand();
             command.CommandText = "INSERT INTO Users VALUES('" + username + "','" + password + "','" + firstName + "','" + lastName + "','" + email + "','" + city + "','" + gender + "','" + allTimeProfit + "')";
