@@ -24,6 +24,13 @@ namespace PokerServer
         BET_AGREE_ROUND_FOUR,
         OPEN_PLAYERS_CARDS,
     };
+
+    /// <summary>
+    /// This is the class that manages the game itself for multiple players. 
+    /// Because there's a single game at every given time, this class is a SingleTon.
+    /// It holds a list of the players, the game's stage, indexes of players with a role and the amount
+    /// of money on the table.
+    /// </summary>
     internal class GameManager
     {
 
@@ -42,6 +49,12 @@ namespace PokerServer
         private Random rnd = new Random();
         public const int MIN_BET_FACTOR = 2;
 
+        /// <summary>
+        /// Get instance based on Singleton pattern. 
+        /// Each time its called, a new gameHandlerForSinglePlayer is stored in the List of players
+        /// </summary>
+        /// <param name="gameHandlerForSinglePlayer"></param>
+        /// <returns></returns>
         public static GameManager GetInstance(GameHandlerForSinglePlayer gameHandlerForSinglePlayer)
         {
             if (instance == null)
@@ -56,7 +69,7 @@ namespace PokerServer
         }
 
         /// <summary>
-        /// the construcor create new CardDeck and give value to the private "stage" that this is the first round
+        /// the private construcor create new CardDeck and give value to the private "stage" that this is the first round
         /// </summary>
         private GameManager()
         {
@@ -68,7 +81,7 @@ namespace PokerServer
         /// the function return the cards that will send to the table
         /// </summary>
         /// <param name="length"></param>
-        /// <returns></returns>
+        /// <returns>an array of random cards from the cards deck</returns>
         public Card[] getCardsFromTable(int length)
         {
             Card[] answer = new Card[length];
@@ -84,7 +97,7 @@ namespace PokerServer
         /// <summary>
         /// the function return string that contain all the username of connected players devide by ','
         /// </summary>
-        /// <returns></returns>
+        /// <returns>all the names of the users</returns>
         public static string getAllUsername()
         {
             string answer = "";
@@ -97,9 +110,9 @@ namespace PokerServer
         }
 
         /// <summary>
-        /// the function return string that contain all username and their money
+        /// the function return string that contain all username and their money around a given user ID
         /// </summary>
-        /// <param name="userId"></param>
+        /// <param name="userId">The user ID to pivot the list from</param>
         /// <returns></returns>
         public string getAllUsernameAndTheirMoney(int userId)
         {
@@ -176,7 +189,7 @@ namespace PokerServer
         /// <summary>
         /// the function send the cards for the table 
         /// </summary>
-        /// <param name="numberOfCards"></param>
+        /// <param name="numberOfCards">Number of cards to send</param>
         public void sendCardsForTable(int numberOfCards)
         {
             int place=0;
@@ -214,7 +227,7 @@ namespace PokerServer
         /// <summary>
         /// the function deal with changing the turn of the players
         /// </summary>
-        /// <param name="firstTurn"></param>
+        /// <param name="firstTurn">Whether this is the 1st turn on the game</param>
         public void nextTurn(bool firstTurn)
         {
             if (firstTurn)
@@ -356,7 +369,7 @@ namespace PokerServer
         /// <summary>
         /// the function handle the winners and the losers at the end of the game (Update All Time Profit)
         /// </summary>
-        /// <param name="winner"></param>
+        /// <param name="winner">A list of all winners</param>
         public void HandleWinner(List<GameHandlerForSinglePlayer> winner)
         {
             int moneyToADD = this.moneyOnTheTable / winner.Count;
@@ -382,7 +395,8 @@ namespace PokerServer
         /// <summary>
         /// the function send to all clients the winners names
         /// </summary>
-        /// <param name="allWinnerNames"></param>
+        /// <param name="allWinnerNames">All the names of the winners</param>
+        /// <param name="oneWinnerName">If there are multiple winners, one of them</param>
         private void NotifyWinner(string allWinnerNames, string oneWinnerName)
         {
             string allPlayersAndCards = "";
@@ -399,12 +413,12 @@ namespace PokerServer
             this.Brodcast(clientServerProtocol.generate());
         }
 
-        
+
         /// <summary>
         /// the function check if there is only one player that hasn't fold at specific game and if there is she 
-        /// return his username
+        /// return his GameHandlerForSinglePlayer instance
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The GameHandlerForSinglePlayer of the winner if its a single one</returns>
         private GameHandlerForSinglePlayer checkIfSingleWinner()
         {
             int count = 0;
@@ -490,11 +504,11 @@ namespace PokerServer
         /// <summary>
         /// the function handle the three command - RAISE, CHECK and FOLD and deal with them
         /// </summary>
-        /// <param name="betMoney"></param>
-        /// <param name="username"></param>
-        /// <param name="isRaise"></param>
-        /// <param name="isCheck"></param>
-        /// <param name="isFold"></param>
+        /// <param name="betMoney">Amount of bet</param>
+        /// <param name="username">The username</param>
+        /// <param name="isRaise">Is it raise?</param>
+        /// <param name="isCheck">Is it check?</param>
+        /// <param name="isFold">Is it fold?</param>
         /// <exception cref="Exception"></exception>
         public void handleRaise(int betMoney, string username, bool isRaise, bool isCheck, bool isFold)
         {
@@ -530,7 +544,7 @@ namespace PokerServer
         /// <summary>
         /// the function return the highest bet that some player bet on
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The highest bet among the players</returns>
         public int highestBet()
         {
             int highestBet = _allPlayers.First().betMoney;
@@ -557,7 +571,7 @@ namespace PokerServer
         /// <summary>
         /// the function send the string that it recived to all of the players that are in the game 
         /// </summary>
-        /// <param name="text"></param>
+        /// <param name="text">Text to broadcast</param>
         private void Brodcast(string text)
         {
             foreach (GameHandlerForSinglePlayer player in _allPlayers)
@@ -568,8 +582,8 @@ namespace PokerServer
         /// <summary>
         /// the function check if the user is already in the game, if he is it will return true otherwise false
         /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <param name="userId">User ID</param>
+        /// <returns>Whether this user is already logged in</returns>
         public bool IsUserAlreadyLoggedIn(int userId)
         {
             foreach(GameHandlerForSinglePlayer gm in _allPlayers)

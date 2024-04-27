@@ -7,11 +7,18 @@ using System.Threading.Tasks;
 
 namespace PokerServer
 {
+    /// <summary>
+    /// Main entry point of the program
+    /// </summary>
     class Program
     {
         const int portNo = 500;
         private const string ipAddress = "127.0.0.1";
 
+        /// <summary>
+        /// Main function to run
+        /// </summary>
+        /// <param name="args">arguments</param>
         static void Main(string[] args)
         {
             System.Net.IPAddress localAdd = System.Net.IPAddress.Parse(ipAddress);
@@ -37,11 +44,9 @@ namespace PokerServer
                 {
                     PokerClientConnection user = new PokerClientConnection(listener.AcceptTcpClient());
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Console.WriteLine(ex.ToString());
-
-                    // ignoring the exception because its DOS
+                    // ignoring the exception because its probably DOS error
                 }
             }
 

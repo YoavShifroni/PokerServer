@@ -35,9 +35,9 @@ namespace PokerServer
         /// the function return List that contain the names of the winners in this around acording to the
         /// Poker rules
         /// </summary>
-        /// <param name="playersCards"></param>
-        /// <param name="communityCards"></param>
-        /// <returns></returns>
+        /// <param name="playersCards">A list of PlayerHand per players in the game</param>
+        /// <param name="communityCards">The list of community cards on the table</param>
+        /// <returns>A list of usernames that are the winners (1 or more, in case of tie)</returns>
         public static List<string> DetermineWinner(List<PlayerHand> playersCards, List<Card> communityCards)
         {
 

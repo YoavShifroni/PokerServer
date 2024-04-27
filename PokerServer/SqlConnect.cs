@@ -1,20 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PokerServer
 {
+    /// <summary>
+    /// This class represents the data access layer - through SQL connection, storing and fetching data
+    /// from the SQL database
+    /// </summary>
     class SqlConnect
     {
-        private string connectionString;
         private SqlConnection connection;
 
         public SqlConnect()
         {
-            connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=D:\Visual Studio\PokerServer\PokerServer\Database1.mdf;Integrated Security = True";
+
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database1.mdf") + ";Integrated Security = True";
             connection = new SqlConnection(connectionString);
         }
 

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace PokerServer
 {
+    /// <summary>
+    /// This class holds a data for a single user that easily represents their hand in the game
+    /// </summary>
     public class PlayerHand
     {
         public List<Card> cards;
@@ -17,8 +20,8 @@ namespace PokerServer
         /// <summary>
         /// the constructor stores the List of Cards and the username and give the private hand
         /// </summary>
-        /// <param name="cards"></param>
-        /// <param name="username"></param>
+        /// <param name="cards">The user's cards</param>
+        /// <param name="username">The username</param>
         public PlayerHand(List<Card> cards, string username)
         {
             this.cards = cards;

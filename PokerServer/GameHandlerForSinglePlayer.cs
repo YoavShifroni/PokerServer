@@ -10,7 +10,10 @@ using System.Xml;
 
 namespace PokerServer
 {
-
+    /// <summary>
+    /// This class holds the data for a single player in the poker game
+    /// It stores handles the commands being received from the client and sends commands back to it
+    /// </summary>
     public class GameHandlerForSinglePlayer
     {
 
@@ -30,19 +33,18 @@ namespace PokerServer
         /// <summary>
         /// the constructor create a new SqlConnection and stores the pokerClientConnection
         /// </summary>
-        /// <param name="pokerClientConnection"></param>
+        /// <param name="pokerClientConnection">The Connection that was created with the client</param>
         public GameHandlerForSinglePlayer(PokerClientConnection pokerClientConnection)
         {
             sqlConnect = new SqlConnect();
             this.pokerClientConnection = pokerClientConnection;
-
         }
 
 
         /// <summary>
         /// the function handle the commands that come from the client and deal with them
         /// </summary>
-        /// <param name="command"></param>
+        /// <param name="command">The command that was received from the client</param>
         public void HandleCommand(string command)
         {
             ClientServerProtocol c1 = new ClientServerProtocol(command);
@@ -114,7 +116,7 @@ namespace PokerServer
         /// <summary>
         /// the function deal with the amount of money that the user just bet
         /// </summary>
-        /// <param name="betMoney"></param>
+        /// <param name="betMoney">Amount of money</param>
         private void handleBetMoney(int betMoney)
         {
             this.betMoney += betMoney;
@@ -126,8 +128,8 @@ namespace PokerServer
         /// <summary>
         /// the function handle the LOGIN command when someone is trying to login to the game
         /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
+        /// <param name="username">Username</param>
+        /// <param name="password">Password</param>
         private void handleLogin(string username, string password)
         {
             if (GameManager.GetInstance(null).isActiveGame)
@@ -221,8 +223,8 @@ namespace PokerServer
         /// <summary>
         /// the function encode the password of the user using MD5 (hash) to protect the data base
         /// </summary>
-        /// <param name="password"></param>
-        /// <returns></returns>
+        /// <param name="password">The password to encrypt</param>
+        /// <returns>The encrypted value as a string</returns>
         public static string CreateMD5(string password)
         {
             byte[] encodedPassword = new UTF8Encoding().GetBytes(password);
@@ -237,7 +239,7 @@ namespace PokerServer
         /// <summary>
         /// the function handle the command FORGOT_PASSWORD when someone forget his password
         /// </summary>
-        /// <param name="username"></param>
+        /// <param name="username">Username</param>
         public void ForgotPassword(string username, string code)
         {
             if(!sqlConnect.IsExist(username)) {
@@ -252,8 +254,8 @@ namespace PokerServer
         /// the function handle the command UPDATE_PASSWORD when someone enter their new password after
         /// they change it
         /// </summary>
-        /// <param name="username"></param>
-        /// <param name="newPassword"></param>
+        /// <param name="username">Username</param>
+        /// <param name="newPassword">The new password</param>
         public void UpdatePassword(string username, string newPassword)
         {
             string hashedPassword = GameHandlerForSinglePlayer.CreateMD5(newPassword);
@@ -264,8 +266,8 @@ namespace PokerServer
         /// <summary>
         /// the function sending mail to user that forogt his password with new password using SMTP protocol
         /// </summary>
-        /// <param name="email"></param>
-        /// <param name="password"></param>
+        /// <param name="email">Email to send to</param>
+        /// <param name="password">New Password to send over email</param>
         private void sendMail(string email, string password)
         {
             // Command-line argument must be the SMTP host.
@@ -285,7 +287,7 @@ namespace PokerServer
         /// <summary>
         /// the function return the username of this player
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The username</returns>
         public string getUsername()
         {
             return sqlConnect.GetUsernameFromId(this.userId);
@@ -294,7 +296,7 @@ namespace PokerServer
         /// <summary>
         /// the function calls the SendMessage mathod in the client connection class
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">Message to send to the client</param>
         public void SendMessage(string message)
         {
             this.pokerClientConnection.SendMessage(message);
@@ -303,7 +305,7 @@ namespace PokerServer
         /// <summary>
         /// the function set the player cards at the beginning of the game
         /// </summary>
-        /// <param name="cards2"></param>
+        /// <param name="cards2">Cards to set for the user</param>
         public void setCards(Card[] cards2)
         {
             this.cards = new Card[cards2.Length];
@@ -336,7 +338,7 @@ namespace PokerServer
         /// <summary>
         /// the function update the All Time Profit area in the data base for the players that won
         /// </summary>
-        /// <param name="moneyOnTheTable"></param>
+        /// <param name="moneyOnTheTable">Total bet amount on the table</param>
         public void UpdateMoneyWhenGameEndsForWinner(int moneyOnTheTable)
         {
             sqlConnect.UpdateAllTimeProfitForWinner(this.userId, moneyOnTheTable - this.betMoney);
@@ -346,7 +348,7 @@ namespace PokerServer
         /// <summary>
         /// the function return the object PlayerHand that contain the cards of some player
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Instance of PlayerHand representing this user</returns>
         public PlayerHand GetPlayerHand()
         {
             List<Card> myCards = this.cards.OfType<Card>().ToList();
@@ -357,7 +359,7 @@ namespace PokerServer
         /// <summary>
         /// the function return the value of the All Time Profit area from the data base
         /// </summary>
-        /// <returns></returns>
+        /// <returns>All time profit of the user</returns>
         public int GetAllTimeProfit()
         {
             return sqlConnect.GetAllTimeProfit(this.userId);

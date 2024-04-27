@@ -260,6 +260,12 @@ namespace PokerServer
             return answer;
         }
 
+
+        /// <summary>
+        /// the function set a card in specific place
+        /// </summary>
+        /// <param name="card">the card</param>
+        /// <param name="index">the index to place the card</param>
         public void SetOpenCard(string card, int index)
         {
             this.cards[index] = card;

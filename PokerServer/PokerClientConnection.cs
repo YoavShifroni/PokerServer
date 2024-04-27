@@ -31,13 +31,14 @@ namespace PokerServer
         public GameHandlerForSinglePlayer _handler;
 
         public DateTime _lastConnect;
-        
+
         /// <summary>
-        /// When the client gets connected to the server the server will create an instance of the Server and pass the TcpClient
+        /// When the client gets connected to the server the server will create an instance and pass the TcpClient
+        /// The constructor checks for DOS - whether that IP connected over 10 times in the past 10 seconds
+        /// If all is ok - the new TCP connection is stored & a new instance of GameHandlerForSinglePlayer to handle
+        /// this user/client.
         /// </summary>
         /// <param name="client"></param>
-
-
         public PokerClientConnection(TcpClient client)
         {
             int count = 0;
@@ -87,9 +88,9 @@ namespace PokerServer
         }
 
         /// <summary>
-        /// allow the server to send message to the client.
+        /// Allow the server to send message to the client.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">Message to send</param>
         public void SendMessage(string message)
         {
             try
@@ -115,7 +116,8 @@ namespace PokerServer
             }
         }
         /// <summary>
-        /// handel the incom & outcome stream acording the protocol
+        /// Receives a message from the client and activates the command handler in GameHandlerForSinglePlayer
+        /// In case the client's connection disconnects - handles it
         /// </summary>
         /// <param name="ar"></param>
         public void ReceiveMessage(IAsyncResult ar)
@@ -154,7 +156,7 @@ namespace PokerServer
         /// <summary>
         /// send message to all the players that are connected
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">Text to broadcast</param>
         public void Broadcast(string message)
         {
             foreach (DictionaryEntry c in AllClients)
@@ -162,7 +164,9 @@ namespace PokerServer
                 ((PokerClientConnection)(c.Value)).SendMessage(message);
             }
         }
-
+        /// <summary>
+        /// Close down the connection
+        /// </summary>
         public void Close()
         {
             AllClients.Remove(_clientIP);

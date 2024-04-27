@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace PokerServer
 {
+    /// <summary>
+    /// This class represents a deck of cards used in a Poker game
+    /// </summary>
     internal class CardDeck
     {
         private Card[] cards;

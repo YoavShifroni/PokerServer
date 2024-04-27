@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace PokerServer
 {
+    /// <summary>
+    /// This class represents a single card
+    /// </summary>
     public class Card
     {
         public string nameOfCard { get; set; }
