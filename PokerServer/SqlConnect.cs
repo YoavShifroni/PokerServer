@@ -24,9 +24,7 @@ namespace PokerServer
         /// </summary>
         public SqlConnect()
         {
-
-            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" 
-            + Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Database1.mdf") + ";Integrated Security = True";
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=D:\Visual Studio\PokerServer\PokerServer\Database1.mdf;Integrated Security = True";
             connection = new SqlConnection(connectionString);
         }
 
@@ -46,8 +44,9 @@ namespace PokerServer
             string city, string gender, int allTimeProfit)
         {
 
-            String query = "INSERT INTO Users (Username, Password, FirstName, LastName, Email, City, Gender, AllTimeProfit) VALUES (@username, @password, @firstname, @lastname, @email, @city, @gender, @allTimeProfit)";
-            SqlCommand command = new SqlCommand(query, this.connection);
+            string query = "INSERT INTO Users (Username, Password, FirstName, LastName, Email, City, Gender, AllTimeProfit) VALUES (@username, @password, @firstname, @lastname, @email, @city, @gender, @allTimeProfit)";
+            SqlCommand command = new SqlCommand();
+            command.CommandText = query;
             command.Parameters.AddWithValue("@username", username);
             command.Parameters.AddWithValue("@password", password);
             command.Parameters.AddWithValue("@firstname", firstName);
@@ -56,11 +55,11 @@ namespace PokerServer
             command.Parameters.AddWithValue("@city", city);
             command.Parameters.AddWithValue("@gender", gender);
             command.Parameters.AddWithValue("@allTimeProfit", allTimeProfit);
-
             connection.Open();
+            command.Connection = connection;
             int id = command.ExecuteNonQuery();
+            Console.WriteLine("New Id is: " + id);
             connection.Close();
-            //command.CommandText = "INSERT INTO Users VALUES('" + username + "','" + password + "','" + firstName + "','" + lastName + "','" + email + "','" + city + "','" + gender + "','" + allTimeProfit + "')";
             return id;
         }
 
