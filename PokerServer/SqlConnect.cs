@@ -45,13 +45,23 @@ namespace PokerServer
         public int InsertNewUser(string username, string password, string firstName, string lastName, string email,
             string city, string gender, int allTimeProfit)
         {
-            SqlCommand command = new SqlCommand();
-            command.CommandText = "INSERT INTO Users VALUES('" + username + "','" + password + "','" + firstName + "','" + lastName + "','" + email + "','" + city + "','" + gender + "','" + allTimeProfit + "')";
+
+            String query = "INSERT INTO Users (Username, Password, FirstName, LastName, Email, City, Gender, AllTimeProfit) VALUES (@username, @password, @firstname, @lastname, @email, @city, @gender, @allTimeProfit)";
+            SqlCommand command = new SqlCommand(query, this.connection);
+            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.AddWithValue("@password", password);
+            command.Parameters.AddWithValue("@firstname", firstName);
+            command.Parameters.AddWithValue("@lastname", lastName);
+            command.Parameters.AddWithValue("@email", email);
+            command.Parameters.AddWithValue("@city", city);
+            command.Parameters.AddWithValue("@gender", gender);
+            command.Parameters.AddWithValue("@allTimeProfit", allTimeProfit);
+
             connection.Open();
-            command.Connection = connection;
-            var x = command.ExecuteNonQuery();
+            int id = command.ExecuteNonQuery();
             connection.Close();
-            return x;
+            //command.CommandText = "INSERT INTO Users VALUES('" + username + "','" + password + "','" + firstName + "','" + lastName + "','" + email + "','" + city + "','" + gender + "','" + allTimeProfit + "')";
+            return id;
         }
 
         /// <summary>
