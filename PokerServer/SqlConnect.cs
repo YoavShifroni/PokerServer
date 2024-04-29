@@ -24,6 +24,7 @@ namespace PokerServer
         /// </summary>
         public SqlConnect()
         {
+
             string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=D:\Visual Studio\PokerServer\PokerServer\Database1.mdf;Integrated Security = True";
             connection = new SqlConnection(connectionString);
         }
