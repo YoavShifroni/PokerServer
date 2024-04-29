@@ -346,6 +346,10 @@ namespace PokerServerTests
         }
 
 
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of ThreeOfAKind 
+        /// </summary>
         [TestMethod]
         public void TestDetermineWinnerThreeOfAKind()
         {
@@ -373,6 +377,11 @@ namespace PokerServerTests
 
         }
 
+
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of Straight
+        /// </summary>
         [TestMethod]
         public void TestDetermineWinnerStraight()
         {
@@ -400,6 +409,10 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of Flush
+        /// </summary>
         [TestMethod]
         public void TestDetermineWinnerFlush()
         {
@@ -427,6 +440,10 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of FullHouse 
+        /// </summary>
         [TestMethod]
         public void TestDetermineWinnerFullHouse()
         {
@@ -454,6 +471,11 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of FullHouse but when both player have the same card that apper three time but different card that
+        /// apper two times
+        /// </summary>
         [TestMethod]
         public void TestDetermineWinnerSpecificFullHouse()
         {
@@ -481,6 +503,10 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of FullHouse but when there is already a TwoPair in the community cards
+        /// </summary>
         [TestMethod]
         public void TestDetermineWinnerFullHouse2()
         {
@@ -511,7 +537,10 @@ namespace PokerServerTests
 
 
 
-
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of FourOfAKind 
+        /// </summary>
         [TestMethod]
         public void TestDetermineWinnerFourOfAKind()
         {
@@ -539,6 +568,10 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of StraightFlush
+        /// </summary>
         [TestMethod]
         public void TestDetermineWinnerStraightFlush()
         {
@@ -566,6 +599,10 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of StraightFlush but both players have 6 cards from the same type
+        /// </summary>
         [TestMethod]
         public void TestDetermineWinnerStraightFlush2()
         {
@@ -593,6 +630,10 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of StraightFlush but when there is a duplicate of one of the cards that apper in the straight
+        /// </summary>
         [TestMethod]
         public void TestDetermineWinnerStraightFlush3()
         {
@@ -620,6 +661,10 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of RoyalFlush 
+        /// </summary>
         [TestMethod]
         public void TestDetermineWinnerRoyalFlush()
         {
@@ -647,6 +692,10 @@ namespace PokerServerTests
 
         }
 
+        /// <summary>
+        /// this test check if the function DetermineWinner is return the right winner name in case of two players
+        /// with hand ranking of OnePair, the function check who has the highest high card
+        /// </summary>
         [TestMethod]
         public void TestSpecificCase()
         {

@@ -59,7 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Card.cs" />
-    <Compile Include="CardComparer.cs" />
     <Compile Include="ClientServerProtocol.cs" />
     <Compile Include="CardDeck.cs" />
     <Compile Include="GameHandlerForSinglePlayer.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,19 +14,15 @@ namespace PokerServer
     class Program
     {
         const int portNo = 500;
-        private const string ipAddress = "127.0.0.1";
-
         /// <summary>
         /// Main function to run
         /// </summary>
         /// <param name="args">arguments</param>
         static void Main(string[] args)
         {
-            System.Net.IPAddress localAdd = System.Net.IPAddress.Parse(ipAddress);
 
-            TcpListener listener = new TcpListener(localAdd, portNo);
+            TcpListener listener = new TcpListener(IPAddress.Any, portNo);
 
-            Console.WriteLine("Listening to ip {0} port: {1}", ipAddress, portNo);
             Console.WriteLine("Server is ready.");
 
             // Start listen to incoming connection requests
@@ -49,11 +46,7 @@ namespace PokerServer
                     // ignoring the exception because its probably DOS error
                 }
             }
-
-
-
-
-
         }
     }
+
 }
