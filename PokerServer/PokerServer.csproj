@@ -58,6 +58,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AESClass.cs" />
+    <Compile Include="AESClient.cs" />
     <Compile Include="Card.cs" />
     <Compile Include="ClientServerProtocol.cs" />
     <Compile Include="CardDeck.cs" />

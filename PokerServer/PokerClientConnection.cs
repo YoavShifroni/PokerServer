@@ -38,6 +38,8 @@ namespace PokerServer
         /// </summary>
         private byte[] data;
 
+        private AESClass aes;
+
         /// <summary>
         /// GameHandleForSinglePlayer object
         /// </summary>
@@ -93,6 +95,13 @@ namespace PokerServer
 
             _lastConnect = DateTime.Now;
 
+            aes = new AESClass();
+            ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
+            clientServerProtocol.command = Command.AES;
+            clientServerProtocol.key = aes.key;
+            clientServerProtocol.iv = aes.iv;
+            this.SendMessage(clientServerProtocol.generate());
+
             // BeginRead will begin async read from the NetworkStream
             // This allows the server to remain responsive and continue accepting new connections from other clients
             // When reading complete control will be transfered to the ReviveMessage() function.
@@ -123,7 +132,29 @@ namespace PokerServer
                 }
 
                 // Send data to the client
-                byte[] bytesToSend = System.Text.Encoding.ASCII.GetBytes(message);
+                byte[] bytesToSend;
+                if (aes.initialize == false)
+                {
+                    bytesToSend = System.Text.Encoding.ASCII.GetBytes(message);
+                    aes.initialize = true;
+                }
+                else
+                {
+                    byte[] encrypt = aes.EncryptStringToBytes(message);
+                    string messageToSend = Convert.ToBase64String(encrypt);
+                    messageToSend += "\r\n";
+                    bytesToSend = System.Text.Encoding.ASCII.GetBytes(messageToSend);
+                    //byte[] endMessage = System.Text.Encoding.ASCII.GetBytes("\r\n");
+                    //bytesToSend = new byte[encrypt.Length + endMessage.Length];
+                    //for (int i = 0; i < encrypt.Length; i++)
+                    //{
+                    //    bytesToSend[i] = encrypt[i];
+                    //}
+                    //for (int j = 0; j < endMessage.Length; j++)
+                    //{
+                    //    bytesToSend[encrypt.Length + j] = endMessage[j];
+                    //}
+                }
                 ns.Write(bytesToSend, 0, bytesToSend.Length);
                 ns.Flush();
             }
@@ -152,7 +183,9 @@ namespace PokerServer
                     AllClients.Remove(_clientIP);
                     return;
                 }
-                string commandRecive = System.Text.Encoding.ASCII.GetString(data, 0, bytesRead);
+                byte[] truncArray = new byte[bytesRead];
+                Array.Copy(this.data, truncArray, truncArray.Length);
+                string commandRecive = aes.DecryptStringFromBytes(truncArray);
                 Console.WriteLine(commandRecive);
                 this._handler.HandleCommand(commandRecive);
                 lock (_client.GetStream())

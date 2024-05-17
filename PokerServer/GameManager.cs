@@ -388,7 +388,7 @@ namespace PokerServer
             if (theWinners.Count > 1)
             {
                 List<GameHandlerForSinglePlayer> winners = new List<GameHandlerForSinglePlayer>();
-                string nameOfWinners = "It's a tie bettwen: ";
+                string nameOfWinners = "It's a tie between: ";
                 foreach (string s in theWinners)
                 {
                     winners.Add(playersMap[s]);

@@ -11,6 +11,7 @@ namespace PokerServer
     /// </summary>
     public enum Command
     {
+        AES,
         REGISTRATION,
         LOGIN,
         ERROR,
@@ -161,6 +162,10 @@ namespace PokerServer
         /// </summary>
         public string newPassword { get; set; }
 
+        public byte[] key {  get; set; }
+
+        public byte[] iv { get; set; }
+
         /// <summary>
         /// empty constructor
         /// </summary>
@@ -184,6 +189,10 @@ namespace PokerServer
             {
                 case Command.ERROR:
                     this.message = answer[1];
+                    break;
+                case Command.AES:
+                    this.key = Convert.FromBase64String(answer[1]);
+                    this.iv = Convert.FromBase64String(answer[2]);
                     break;
                 case Command.LOGIN:
                     this.username = answer[1];
@@ -267,6 +276,10 @@ namespace PokerServer
                 case Command.ERROR:
                     answer += message + "\n";
                     break;
+                case Command.AES:
+                    answer += Convert.ToBase64String(this.key) + "\n";
+                    answer += Convert.ToBase64String(this.iv) + "\n";
+                    break;
                 case Command.LOGIN:
                     answer += username + "\n";
                     answer += password + "\n";
@@ -334,7 +347,7 @@ namespace PokerServer
                     break;
 
             }
-            answer += "\r\n";
+            //answer += "\r\n";
             return answer;
         }
         /// <summary>
